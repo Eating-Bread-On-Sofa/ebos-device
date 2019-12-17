@@ -29,6 +29,7 @@ public class DeviceController {
     @Value("${server.edgex}")
     private String ip;
 
+    @CrossOrigin
     @GetMapping("/list")
     public LayuiTableResultUtil<JSONArray> getEdgeXDevices(){
         String url = "http://"+ip+":48081/api/v1/device";
@@ -83,6 +84,7 @@ public class DeviceController {
 //        }
 //        return false;
 //    }
+    @CrossOrigin
     @GetMapping("/{id}")
     public JSONObject getThisDevice(@PathVariable String id){
         String url = "http://"+ip+":48081/api/v1/device/"+id;
@@ -95,6 +97,7 @@ public class DeviceController {
         return jo;
     }
 
+    @CrossOrigin
     @PostMapping("/json")
     public String addDevice(@RequestBody JSONObject jsonObject) {
         try{
@@ -112,6 +115,7 @@ public class DeviceController {
 
     }
 
+    @CrossOrigin
     @DeleteMapping()
     public void deleteDevice(@RequestBody String id){
         String url = "http://"+ip+":48081/api/v1/device/id/"+id;
@@ -120,6 +124,7 @@ public class DeviceController {
         }
     }
 
+    @CrossOrigin
     @GetMapping("/ping")
     public String ping(){
         return "pong";

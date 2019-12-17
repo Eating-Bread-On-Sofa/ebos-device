@@ -20,8 +20,9 @@ public class ProfileController {
     @Value("${server.edgex}")
     private String ip;
 
+    @CrossOrigin
     @GetMapping("/list")
-    public LayuiTableResultUtil<JSONArray> getProducts() {
+    public LayuiTableResultUtil<JSONArray> getProducts(@RequestParam int page,@RequestParam int limit) {
         String url = "http://"+ip+":48081/api/v1/deviceprofile";
         JSONArray products = new JSONArray(restTemplate.getForObject(url,JSONArray.class));
         JSONArray result = new JSONArray();
@@ -34,12 +35,14 @@ public class ProfileController {
         return new LayuiTableResultUtil<>("",result,0,products.size());
     }
 
+    @CrossOrigin
     @GetMapping("/{id}")
     public JSONObject getThisProduct(@PathVariable String id){
         String url = "http://"+ip+":48081/api/v1/deviceprofile/"+id;
         return profileService.stamp2Time(restTemplate.getForObject(url,JSONObject.class));
     }
 
+    @CrossOrigin
     @PostMapping("/yml")
     public String addProduct(@RequestBody String product) {
         System.out.println("收到\n"+product);
@@ -48,6 +51,7 @@ public class ProfileController {
         return result;
     }
 
+    @CrossOrigin
     @DeleteMapping()
     public void deleteProduct(@RequestBody String id){
         String url = "http://"+ip+":48081/api/v1/deviceprofile/id/"+id;
@@ -55,6 +59,7 @@ public class ProfileController {
         restTemplate.delete(url);
     }
 
+    @CrossOrigin
     @GetMapping("/ping")
     public String ping(){
         return "pong";
