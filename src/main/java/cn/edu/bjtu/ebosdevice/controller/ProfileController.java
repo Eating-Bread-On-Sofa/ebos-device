@@ -21,7 +21,7 @@ public class ProfileController {
     private String ip;
 
     @GetMapping("/list")
-    public LayuiTableResultUtil<JSONArray> getProducts(@RequestParam Integer page, @RequestParam Integer limit) {
+    public LayuiTableResultUtil<JSONArray> getProducts() {
         String url = "http://"+ip+":48081/api/v1/deviceprofile";
         JSONArray products = new JSONArray(restTemplate.getForObject(url,JSONArray.class));
         JSONArray result = new JSONArray();
