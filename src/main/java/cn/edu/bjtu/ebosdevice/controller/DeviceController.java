@@ -100,26 +100,30 @@ public class DeviceController {
     @CrossOrigin
     @PostMapping("/json")
     public String addDevice(@RequestBody JSONObject jsonObject) {
-        try{
-            String url = "http://"+ip+":48081/api/v1/device";
-            String result = restTemplate.postForObject(url,jsonObject,String.class);
-            System.out.println("添加设备成功 id="+result);
-            Device device = new Device();
-            device.setDeviceName(jsonObject.getString("name"));
-            device.setEdgexId(result);
-            deviceService.addDevice(device);
-            return result;
-        }catch (HttpClientErrorException e){
-            return "失败";
+        if(deviceService.findByName(jsonObject.getString("name")) == null) {
+            try {
+                String url = "http://" + ip + ":48081/api/v1/device";
+                String result = restTemplate.postForObject(url, jsonObject, String.class);
+                System.out.println("添加设备成功 id=" + result);
+                Device device = new Device();
+                device.setDeviceName(jsonObject.getString("name"));
+                device.setEdgexId(result);
+                deviceService.addDevice(device);
+                return result;
+            } catch (HttpClientErrorException e) {
+                return "失败";
+            }
+        }else{
+            return "名称重复";
         }
 
     }
 
     @CrossOrigin
     @DeleteMapping()
-    public void deleteDevice(@RequestBody String id){
-        String url = "http://"+ip+":48081/api/v1/device/id/"+id;
-        if (deviceService.deleteByEdgexId(id)){
+    public void deleteDevice(@RequestBody String name){
+        String url = "http://"+ip+":48081/api/v1/device/name/"+name;
+        if (deviceService.deleteByName(name)){
         restTemplate.delete(url);
         }
     }

@@ -91,4 +91,15 @@ public class DeviceServiceImpl implements DeviceService {
             return true;
         }
     }
+
+    @Override
+    public boolean deleteByName(String name){
+        Device device = deviceRepository.findByDeviceName(name);
+        if(device == null ){
+            return false;
+        }else{
+            deviceRepository.deleteByDeviceName(name);
+            return true;
+        }
+    }
 }

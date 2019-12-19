@@ -15,7 +15,9 @@ public interface DeviceRepository extends MongoRepository<Device,String> {
     public Page<Device> findAll(Pageable pageable);
     public Device findDeviceByDeviceId(String deviceId);
     Device findByEdgexId(String id);
+    Device findByDeviceName(String name);
     void deleteByEdgexId(String id);
+    void deleteByDeviceName(String name);
     public Page<Device> findDeviceByDeviceType(String deviceType, Pageable pageable);
     List<Device> findAll();
 }
