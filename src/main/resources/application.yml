@@ -16,3 +16,4 @@ spring:
 server:
   edgex: localhost
   port: 8081
+mq: activemq
