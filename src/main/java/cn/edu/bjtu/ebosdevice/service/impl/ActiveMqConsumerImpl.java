@@ -3,6 +3,7 @@ package cn.edu.bjtu.ebosdevice.service.impl;
 import cn.edu.bjtu.ebosdevice.service.MqConsumer;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQBytesMessage;
+import org.apache.activemq.command.ActiveMQMapMessage;
 import org.apache.activemq.command.ActiveMQTextMessage;
 import org.apache.activemq.util.ByteSequence;
 
@@ -12,7 +13,7 @@ public class ActiveMqConsumerImpl implements MqConsumer {
     private MessageConsumer messageConsumer;
     private static ConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
 
-    public ActiveMqConsumerImpl(String topic){
+    public ActiveMqConsumerImpl(String topic) {
         try {
             Connection connection = connectionFactory.createConnection();
             connection.start();
@@ -20,21 +21,35 @@ public class ActiveMqConsumerImpl implements MqConsumer {
             Destination destination = session.createTopic(topic);
             MessageConsumer consumer = session.createConsumer(destination);
             this.messageConsumer = consumer;
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
     }
 
     @Override
-    public String subscribe(){
+    public String subscribe() {
         try {
-            ActiveMQTextMessage activeMQTextMessage = (ActiveMQTextMessage) messageConsumer.receive();
-            return activeMQTextMessage.getText();
-        }catch (Exception e){
-            try {
-                ActiveMQBytesMessage activeMQMessage = (ActiveMQBytesMessage) messageConsumer.receive();
+            Message message = messageConsumer.receive();
+            if (message instanceof ActiveMQBytesMessage) {
+                ActiveMQBytesMessage activeMQMessage = (ActiveMQBytesMessage) message;
                 ByteSequence content = activeMQMessage.getContent();
                 String msg = new String(content.getData());
+                System.out.println("收到ActiveMQBytesMessage");
                 return msg;
-            }catch (Exception e1){e1.printStackTrace();return "收到的消息类型不支持";}
+            } else if (message instanceof ActiveMQTextMessage) {
+                ActiveMQTextMessage activeMQTextMessage = (ActiveMQTextMessage) message;
+                System.out.println("收到ActiveMQTextMessage");
+                return activeMQTextMessage.getText();
+            } else if (message instanceof ActiveMQMapMessage) {
+                ActiveMQMapMessage activeMQMapMessage = (ActiveMQMapMessage) message;
+                String content = activeMQMapMessage.getContentMap().toString();
+                System.out.println("收到ActiveMQMapMessage");
+                return content;
+            } else {
+                System.out.println("收到" + message.getClass().toString());
+                return "";
+            }
+        } catch (Exception e) {
+            return "ActiveMQ接收出现异常";
         }
     }
 }
