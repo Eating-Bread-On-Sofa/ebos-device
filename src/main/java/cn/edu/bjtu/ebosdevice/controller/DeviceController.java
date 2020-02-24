@@ -1,5 +1,10 @@
 package cn.edu.bjtu.ebosdevice.controller;
 
+import cn.edu.bjtu.ebosdevice.service.Log;
+import cn.edu.bjtu.ebosdevice.service.LogFind;
+
+import cn.edu.bjtu.ebosdevice.service.impl.LogFindImpl;
+import cn.edu.bjtu.ebosdevice.service.log.LogImpl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import cn.edu.bjtu.ebosdevice.entity.Device;
@@ -26,6 +31,10 @@ public class DeviceController {
     ProfileService profileService;
     @Autowired
     private RestTemplate restTemplate;
+    @Autowired
+    Log log = new LogImpl();
+    @Autowired
+    LogFind logFind = new LogFindImpl();
     @Value("${server.edgex}")
     private String ip;
 
@@ -132,5 +141,18 @@ public class DeviceController {
     @GetMapping("/ping")
     public String ping(){
         return "pong";
+    }
+
+    @CrossOrigin
+    @RequestMapping ("/logtest")
+    public String logtest1(){
+        log.error("fail");
+        log.debug("successful");
+        return "成功";
+    }
+    @CrossOrigin
+    @GetMapping("/logtest")
+    public String logtest2(){
+        return logFind.readAll();
     }
 }
