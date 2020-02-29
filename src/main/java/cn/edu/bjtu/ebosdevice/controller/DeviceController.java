@@ -29,7 +29,7 @@ public class DeviceController {
     @Autowired
     private RestTemplate restTemplate;
     @Autowired
-    LogService logService = new LogServiceImpl();
+    LogService logService;
     @Value("${server.edgex}")
     private String ip;
 
@@ -141,13 +141,7 @@ public class DeviceController {
     @CrossOrigin
     @RequestMapping ("/logtest")
     public String logtest1(){
-        logService.error("fail");
-        logService.warn("bad");
-        logService.debug("try again");
-        logService.info("successful");
-        logService.info("successful");
-        logService.info("successful");
-        logService.info("successful!");
+        logService.info("device");
         return "成功";
     }
     @CrossOrigin
