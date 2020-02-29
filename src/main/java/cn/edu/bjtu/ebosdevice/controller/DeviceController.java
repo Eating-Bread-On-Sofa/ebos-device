@@ -1,7 +1,6 @@
 package cn.edu.bjtu.ebosdevice.controller;
 
 import cn.edu.bjtu.ebosdevice.service.LogService;
-import cn.edu.bjtu.ebosdevice.service.impl.LogServiceImpl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import cn.edu.bjtu.ebosdevice.entity.Device;
