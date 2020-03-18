@@ -7,7 +7,6 @@ import com.alibaba.fastjson.JSONObject;
 import cn.edu.bjtu.ebosdevice.entity.Device;
 
 import cn.edu.bjtu.ebosdevice.service.DeviceService;
-import cn.edu.bjtu.ebosdevice.service.ProfileService;
 import cn.edu.bjtu.ebosdevice.util.LayuiTableResultUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,8 +23,6 @@ import java.util.Date;
 public class DeviceController {
     @Autowired
     DeviceService deviceService;
-    @Autowired
-    ProfileService profileService;
     @Autowired
     private RestTemplate restTemplate;
     @Autowired
