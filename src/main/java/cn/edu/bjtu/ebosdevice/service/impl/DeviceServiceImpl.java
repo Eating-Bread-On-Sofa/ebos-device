@@ -3,12 +3,14 @@ package cn.edu.bjtu.ebosdevice.service.impl;
 import cn.edu.bjtu.ebosdevice.dao.DeviceRepository;
 import cn.edu.bjtu.ebosdevice.entity.Device;
 import cn.edu.bjtu.ebosdevice.service.DeviceService;
+import com.alibaba.fastjson.JSONObject;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -101,5 +103,14 @@ public class DeviceServiceImpl implements DeviceService {
             deviceRepository.deleteByDeviceName(name);
             return true;
         }
+    }
+
+    @Override
+    public JSONObject addInfo2Json(JSONObject jo, Device device){
+        Date date = device.getDeviceCreateTime();
+        String gateway = device.getGateway();
+        jo.put("createdTime", date);
+        jo.put("gateway",gateway);
+        return jo;
     }
 }

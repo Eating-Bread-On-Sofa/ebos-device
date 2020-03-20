@@ -22,6 +22,15 @@ public class Device {
     private String devicePath;
     private String deviceLocation;
     private String edgexId;
+    private String gateway;
+
+    public String getGateway() {
+        return gateway;
+    }
+
+    public void setGateway(String gateway) {
+        this.gateway = gateway;
+    }
 
     public String getEdgexId() {
         return edgexId;
