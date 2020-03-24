@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import cn.edu.bjtu.ebosdevice.entity.Device;
 import cn.edu.bjtu.ebosdevice.service.DeviceService;
-import cn.edu.bjtu.ebosdevice.util.LayuiTableResultUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
@@ -23,7 +22,7 @@ public class DeviceController {
 
     @CrossOrigin
     @GetMapping("/{ip}")
-    public LayuiTableResultUtil<JSONArray> getEdgeXDevices(@PathVariable String ip){
+    public JSONArray getEdgeXDevices(@PathVariable String ip){
         String url = "http://"+ip+":48081/api/v1/device";
         JSONArray devices = new JSONArray(restTemplate.getForObject(url,JSONArray.class));
         JSONArray arr = new JSONArray();
@@ -41,7 +40,7 @@ public class DeviceController {
             jo.put("service",serviceName);
             arr.add(jo);
         }
-        return new LayuiTableResultUtil<>("",arr,0,devices.size());
+        return arr;
     }
 
     @CrossOrigin
