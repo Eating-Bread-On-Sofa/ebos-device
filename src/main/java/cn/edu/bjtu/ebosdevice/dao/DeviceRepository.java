@@ -1,6 +1,7 @@
 package cn.edu.bjtu.ebosdevice.dao;
 
 import cn.edu.bjtu.ebosdevice.entity.Device;
+import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -11,13 +12,15 @@ import java.util.List;
 
 @Repository
 public interface DeviceRepository extends MongoRepository<Device,String> {
-    public Device findDeviceByDeviceName(String deviceName);
-    public Page<Device> findAll(Pageable pageable);
-    public Device findDeviceByDeviceId(String deviceId);
+    Device findDeviceByDeviceName(String deviceName);
+    Page<Device> findAll(Pageable pageable);
+    Device findDeviceByDeviceId(String deviceId);
     Device findByEdgexId(String id);
     Device findByDeviceName(String name);
+    Device findByDeviceNameAndGateway(String name, String ip);
     void deleteByEdgexId(String id);
     void deleteByDeviceName(String name);
-    public Page<Device> findDeviceByDeviceType(String deviceType, Pageable pageable);
+    void deleteByDeviceId(String id);
+    Page<Device> findDeviceByDeviceType(String deviceType, Pageable pageable);
     List<Device> findAll();
 }

@@ -35,18 +35,32 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public boolean addDevice(Device device) {
-        Device findDevice = deviceRepository.findDeviceByDeviceName(device.getDeviceName());
+    public String addDevice(Device device) {
+        Device findDevice = deviceRepository.findByDeviceName(device.getDeviceName());
         if (findDevice == null) {
             Device device1 = deviceRepository.save(device);
             ObjectId objectId = new ObjectId(device1.getDeviceId());
             device1.setDeviceCreateTime(objectId.getDate());
             deviceRepository.save(device1);
-            return true;
-
+            return "添加成功";
         } else {
-            return false;
+            return "名称重复";
         }
+    }
+
+    @Override
+    public String plusDevice(Device device){
+        try {
+            Device findDevice = deviceRepository.findByDeviceName(device.getDeviceName());
+            if (findDevice != null) {
+                deviceRepository.deleteByDeviceId(findDevice.getDeviceId());
+            }
+            Device device1 = deviceRepository.save(device);
+            ObjectId objectId = new ObjectId(device1.getDeviceId());
+            device1.setDeviceCreateTime(objectId.getDate());
+            deviceRepository.save(device1);
+            return "成功";
+        }catch (Exception e){return e.toString();}
     }
 
     @Override

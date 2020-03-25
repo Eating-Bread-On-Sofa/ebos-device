@@ -63,19 +63,39 @@ public class DeviceController {
         if(deviceService.findByName(jsonObject.getString("name")) == null) {
             try {
                 String result = restTemplate.postForObject(url, jsonObject, String.class);
-                System.out.println("添加设备成功 id=" + result);
+                System.out.println("添加设备成功 Edgex id=" + result);
                 Device device = new Device();
                 device.setDeviceName(jsonObject.getString("name"));
                 device.setGateway(ip);
-                device.setEdgexId(result);
                 deviceService.addDevice(device);
-                return result;
+                return "添加成功";
             } catch (HttpClientErrorException e) {
-                return "失败";
+                return "失败"+e.toString();
             }
         }else{
             return "名称重复";
         }
+    }
+
+    @CrossOrigin
+    @PostMapping("/recover/{ip}")
+    public JSONObject plusDevice(@PathVariable String ip, @RequestBody JSONArray jsonArray) {
+        String url = "http://" + ip + ":48081/api/v1/device";
+        JSONObject result = new JSONObject();
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+            try {
+                restTemplate.put(url, jsonObject);
+                Device device = new Device();
+                device.setDeviceName(jsonObject.getString("name"));
+                device.setGateway(ip);
+                String r = deviceService.plusDevice(device);
+                result.put(jsonObject.getString("name"), r);
+            } catch (Exception e) {
+                result.put(jsonObject.getString("name"), e.toString());
+            }
+        }
+        return result;
     }
 
     @CrossOrigin

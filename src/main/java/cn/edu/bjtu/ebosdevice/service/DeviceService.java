@@ -10,7 +10,8 @@ import java.util.List;
 public interface DeviceService {
     Page<Device> findAllDevice(Pageable pageable);
     List<Device> findAllDevice();
-    boolean addDevice(Device device);
+    String addDevice(Device device);
+    String plusDevice(Device device);
     String deleteDevice(String deviceId);
     Device findDeviceByDeviceId(String deviceId);
     Device findByName(String name);
