@@ -85,8 +85,11 @@ public class DeviceController {
         for (int i = 0; i < jsonArray.size(); i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             try {
-                restTemplate.put(url, jsonObject);
-                restTemplate.postForObject(url,jsonObject,String.class);
+                try {
+                    restTemplate.put(url, jsonObject);
+                } catch (HttpClientErrorException.NotFound e) {
+                    restTemplate.postForObject(url, jsonObject, String.class);
+                }
                 Device device = new Device();
                 device.setDeviceName(jsonObject.getString("name"));
                 device.setGateway(ip);
