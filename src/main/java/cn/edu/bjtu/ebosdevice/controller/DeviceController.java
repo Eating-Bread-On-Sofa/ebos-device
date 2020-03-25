@@ -86,6 +86,7 @@ public class DeviceController {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
             try {
                 restTemplate.put(url, jsonObject);
+                restTemplate.postForObject(url,jsonObject,String.class);
                 Device device = new Device();
                 device.setDeviceName(jsonObject.getString("name"));
                 device.setGateway(ip);
