@@ -2,7 +2,6 @@ package cn.edu.bjtu.ebosdevice.service.impl;
 
 import cn.edu.bjtu.ebosdevice.entity.Log;
 import cn.edu.bjtu.ebosdevice.service.LogService;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -14,7 +13,6 @@ import java.util.List;
 
 @Service
 public class LogServiceImpl implements LogService {
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss" , timezone = "GMT+8")
     private static String serviceName = "设备管理";
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -56,23 +54,14 @@ public class LogServiceImpl implements LogService {
     }
     @Override
     public String findAll(){
-        //使用StringBuilder提高性能
-        StringBuilder stringBuilder = new StringBuilder();
         List<Log> list = mongoTemplate.findAll(Log.class);
-        for(Log log:list){
-            stringBuilder.append(log.getData()).append("   [").append(log.getCategory()).append("]   ").append(log.getSource()).append(" - ").append(log.getMassage()).append("\n");
-        }
-        return stringBuilder.substring(0,stringBuilder.length()-1);
+        return list2str(list);
     }
     @Override
     public String findLogByCategory(String category){
-        StringBuilder stringBuilder = new StringBuilder();
         Query query = Query.query(Criteria.where("category").is(category));
         List<Log> list = mongoTemplate.find(query , Log.class);
-        for(Log log:list){
-            stringBuilder.append(log.getData()).append("   [").append(log.getCategory()).append("]   ").append(log.getSource()).append(" - ").append(log.getMassage()).append("\n");
-        }
-        return stringBuilder.substring(0,stringBuilder.length()-1);
+        return list2str(list);
     }
     @Override
     public String getTop() {
@@ -103,5 +92,15 @@ public class LogServiceImpl implements LogService {
         }else{
             return  "";
         }
+    }
+
+    private String list2str(List<Log> list){
+        //使用StringBuilder提高性能
+        StringBuilder stringBuilder = new StringBuilder();
+        for(Log log:list){
+            stringBuilder.append(log.getData()).append("   [").append(log.getCategory()).append("]   ").append(log.getSource()).append(" - ").append(log.getMassage()).append("\n");
+        }
+        if(stringBuilder.length()==0){return "日志为空";}else {
+            return stringBuilder.substring(0,stringBuilder.length()-1);}
     }
 }
