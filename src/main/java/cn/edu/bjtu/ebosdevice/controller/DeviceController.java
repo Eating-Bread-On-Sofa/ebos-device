@@ -103,11 +103,16 @@ public class DeviceController {
     }
 
     @CrossOrigin
-    @DeleteMapping("/{ip}")
-    public void deleteDevice(@PathVariable String ip, @RequestBody String name){
-        String url = "http://"+ip+":48081/api/v1/device/name/"+name;
-        if (deviceService.deleteByName(name)){
-        restTemplate.delete(url);
+    @DeleteMapping("/{ip}/{name}")
+    public String deleteDevice(@PathVariable String ip, @PathVariable String name) {
+        String url = "http://" + ip + ":48081/api/v1/device/name/" + name;
+        try {
+            if (deviceService.deleteByName(name)) {
+                restTemplate.delete(url);
+            }
+            return "done";
+        } catch (Exception e) {
+            return e.toString();
         }
     }
 
