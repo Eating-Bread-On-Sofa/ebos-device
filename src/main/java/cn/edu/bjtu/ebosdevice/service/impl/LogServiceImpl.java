@@ -2,7 +2,6 @@ package cn.edu.bjtu.ebosdevice.service.impl;
 
 import cn.edu.bjtu.ebosdevice.entity.Log;
 import cn.edu.bjtu.ebosdevice.service.LogService;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -14,9 +13,7 @@ import java.util.List;
 
 @Service
 public class LogServiceImpl implements LogService {
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss" , timezone = "GMT+8")
-    private static String top = "";
-    private static String str = "";
+    private static String serviceName = "设备管理";
     @Autowired
     private MongoTemplate mongoTemplate;
     @Override
@@ -25,8 +22,7 @@ public class LogServiceImpl implements LogService {
         log.setData(new Date());
         log.setCategory("debug");
         log.setMassage(massage);
-        getTop();
-        log.setSource(top);
+        log.setSource(getTop());
         mongoTemplate.save(log);
     }
     @Override
@@ -35,8 +31,7 @@ public class LogServiceImpl implements LogService {
         log.setData(new Date());
         log.setCategory("info");
         log.setMassage(massage);
-        getTop();
-        log.setSource(top);
+        log.setSource(serviceName);
         mongoTemplate.save(log);
     }
     @Override
@@ -45,8 +40,7 @@ public class LogServiceImpl implements LogService {
         log.setData(new Date());
         log.setCategory("warn");
         log.setMassage(massage);
-        getTop();
-        log.setSource(top);
+        log.setSource(getTop());
         mongoTemplate.save(log);
     }
     @Override
@@ -55,37 +49,22 @@ public class LogServiceImpl implements LogService {
         log.setData(new Date());
         log.setCategory("debug");
         log.setMassage(massage);
-        getTop();
-        log.setSource(top);
+        log.setSource(getTop());
         mongoTemplate.save(log);
     }
     @Override
     public String findAll(){
-        String str1 = "";
-        str = "";
         List<Log> list = mongoTemplate.findAll(Log.class);
-        for(Log log:list){
-            str1 = log.getData() + "   [" + log.getCategory() +"]   " + log.getSource() + "    " + log.getMassage() + "\n";
-            str += str1;
-        }
-        str = str.substring(0,str.length()-1);
-        return str;
+        return list2str(list);
     }
     @Override
     public String findLogByCategory(String category){
-        String str2 = "";
-        str = "";
         Query query = Query.query(Criteria.where("category").is(category));
         List<Log> list = mongoTemplate.find(query , Log.class);
-        for(Log log:list){
-            str2 = log.getData() + "   [" + log.getCategory() +"]   " + log.getSource() + " - " + log.getMassage() + "\n";
-            str += str2;
-        }
-        str = str.substring(0,str.length()-1);
-        return str;
+        return list2str(list);
     }
     @Override
-    public void getTop() {
+    public String getTop() {
         // 获取堆栈信息
         StackTraceElement[] callStack = Thread.currentThread().getStackTrace();
         // 最原始被调用的堆栈信息
@@ -103,16 +82,25 @@ public class LogServiceImpl implements LogService {
             // 下一个非日志类的堆栈，就是最原始被调用的方法
             if (isEachLogClass) {
                 if(!logClassName.equals(s.getClassName())) {
-                    isEachLogClass = false;
                     caller = s;
                     break;
                 }
             }
         }
         if(caller != null) {
-            top = caller.toString();
+            return caller.toString();
         }else{
-            top = "";
+            return  "";
         }
+    }
+
+    private String list2str(List<Log> list){
+        //使用StringBuilder提高性能
+        StringBuilder stringBuilder = new StringBuilder();
+        for(Log log:list){
+            stringBuilder.append(log.getData()).append("   [").append(log.getCategory()).append("]   ").append(log.getSource()).append(" - ").append(log.getMassage()).append("\n");
+        }
+        if(stringBuilder.length()==0){return "日志为空";}else {
+            return stringBuilder.substring(0,stringBuilder.length()-1);}
     }
 }

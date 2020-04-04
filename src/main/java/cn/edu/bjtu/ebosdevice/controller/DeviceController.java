@@ -40,6 +40,7 @@ public class DeviceController {
             jo.put("service",serviceName);
             arr.add(jo);
         }
+        logService.info("查看了位于网关"+ip+" 下的设备列表");
         return arr;
     }
 
@@ -52,6 +53,7 @@ public class DeviceController {
             Device device = deviceService.findByName(jo.getString("name"));
             jo = deviceService.addInfo2Json(jo,device);
         }catch (Exception ignored){}
+        logService.info("查看了位于网关"+ip+" 下id="+id+" 的设备信息");
         return jo;
     }
 
@@ -59,20 +61,22 @@ public class DeviceController {
     @PostMapping("/{ip}")
     public String addDevice(@PathVariable String ip, @RequestBody JSONObject jsonObject) {
         String url = "http://" + ip + ":48081/api/v1/device";
-        System.out.println(url);
-        if(deviceService.findByName(jsonObject.getString("name")) == null) {
+        String name = jsonObject.getString("name");
+        if(deviceService.findByName(name) == null) {
             try {
                 String result = restTemplate.postForObject(url, jsonObject, String.class);
-                System.out.println("添加设备成功 Edgex id=" + result);
                 Device device = new Device();
-                device.setDeviceName(jsonObject.getString("name"));
+                device.setDeviceName(name);
                 device.setGateway(ip);
                 deviceService.addDevice(device);
+                logService.info("向"+ip+"添加"+name+"设备成功 Edgex id=" + result);
                 return "添加成功";
             } catch (HttpClientErrorException e) {
-                return "失败"+e.toString();
+                logService.error("尝试向"+ip+"添加"+name+"设备失败:"+e.toString());
+                return "添加失败 "+e.toString();
             }
         }else{
+            logService.warn("尝试向"+ip+"添加"+name+"设备失败:名称重复");
             return "名称重复";
         }
     }
@@ -80,6 +84,7 @@ public class DeviceController {
     @CrossOrigin
     @PostMapping("/recover/{ip}")
     public JSONObject plusDevice(@PathVariable String ip, @RequestBody JSONArray jsonArray) {
+        logService.info("开始向"+ip+"恢复设备配置");
         String url = "http://" + ip + ":48081/api/v1/device";
         JSONObject result = new JSONObject();
         for (int i = 0; i < jsonArray.size(); i++) {
@@ -99,6 +104,7 @@ public class DeviceController {
                 result.put(jsonObject.getString("name"), e.toString());
             }
         }
+        logService.info("恢复结果"+result.toJSONString());
         return result;
     }
 
@@ -110,8 +116,10 @@ public class DeviceController {
             if (deviceService.deleteByName(name)) {
                 restTemplate.delete(url);
             }
+            logService.info("删除网关"+ip+"中的"+name+"设备");
             return "done";
         } catch (Exception e) {
+            logService.error("删除网关"+ip+"中的"+name+"设备失败"+e.toString());
             return e.toString();
         }
     }
@@ -120,17 +128,5 @@ public class DeviceController {
     @GetMapping("/ping")
     public String ping(){
         return "pong";
-    }
-
-    @CrossOrigin
-    @RequestMapping ("/logtest")
-    public String logtest1(){
-        logService.info("device");
-        return "成功";
-    }
-    @CrossOrigin
-    @GetMapping("/logtest")
-    public String logtest2(){
-        return logService.findLogByCategory("info");
     }
 }
