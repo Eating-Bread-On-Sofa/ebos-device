@@ -24,3 +24,12 @@ server:
   edgex: localhost
   port: 8081
 mq: activemq
+protocols:
+  protocol:
+    modbus-rtu:
+      - Address
+      - BaudRate
+      - DataBits
+      - Parity
+      - StopBits
+      - UnitID

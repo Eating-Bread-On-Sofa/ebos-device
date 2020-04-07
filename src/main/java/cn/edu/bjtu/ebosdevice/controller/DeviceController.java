@@ -1,6 +1,7 @@
 package cn.edu.bjtu.ebosdevice.controller;
 
 import cn.edu.bjtu.ebosdevice.service.LogService;
+import cn.edu.bjtu.ebosdevice.service.impl.ProtocolsDict;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import cn.edu.bjtu.ebosdevice.entity.Device;
@@ -9,6 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 @RequestMapping("/api/device")
 @RestController
@@ -19,6 +24,8 @@ public class DeviceController {
     private RestTemplate restTemplate;
     @Autowired
     LogService logService;
+    @Autowired
+    ProtocolsDict protocolsDict;
 
     @CrossOrigin
     @GetMapping("/{ip}")
@@ -123,6 +130,24 @@ public class DeviceController {
             return e.toString();
         }
     }
+
+    @CrossOrigin
+    @GetMapping("/protocol/{name}")
+    public JSONObject getProtocol(@PathVariable String name){
+        Map map = protocolsDict.getProtocol();
+        JSONObject result = new JSONObject();
+        JSONObject content = new JSONObject();
+        Set keys = map.keySet();
+        Iterator it = keys.iterator();
+        while(it.hasNext()){
+            String key = it.next().toString();
+            if(key.contains(name)){
+                content.put(map.get(key).toString(),null);
+            }
+        }
+        result.put(name,content);
+        return result;
+}
 
     @CrossOrigin
     @GetMapping("/ping")
