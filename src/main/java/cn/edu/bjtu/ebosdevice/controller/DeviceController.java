@@ -28,7 +28,7 @@ public class DeviceController {
     ProtocolsDict protocolsDict;
 
     @CrossOrigin
-    @GetMapping("/{ip}")
+    @GetMapping("/ip/{ip}")
     public JSONArray getEdgeXDevices(@PathVariable String ip){
         String url = "http://"+ip+":48081/api/v1/device";
         JSONArray devices = new JSONArray(restTemplate.getForObject(url,JSONArray.class));
@@ -52,7 +52,7 @@ public class DeviceController {
     }
 
     @CrossOrigin
-    @GetMapping("/{ip}/{id}")
+    @GetMapping("/ip/{ip}/id/{id}")
     public JSONObject getThisDevice(@PathVariable String ip, @PathVariable String id){
         String url = "http://"+ip+":48081/api/v1/device/"+id;
         JSONObject jo = restTemplate.getForObject(url,JSONObject.class);
@@ -65,7 +65,7 @@ public class DeviceController {
     }
 
     @CrossOrigin
-    @PostMapping("/{ip}")
+    @PostMapping("/ip/{ip}")
     public String addDevice(@PathVariable String ip, @RequestBody JSONObject jsonObject) {
         String url = "http://" + ip + ":48081/api/v1/device";
         String name = jsonObject.getString("name");
@@ -116,7 +116,7 @@ public class DeviceController {
     }
 
     @CrossOrigin
-    @DeleteMapping("/{ip}/{name}")
+    @DeleteMapping("/ip/{ip}/name/{name}")
     public String deleteDevice(@PathVariable String ip, @PathVariable String name) {
         String url = "http://" + ip + ":48081/api/v1/device/name/" + name;
         try {
@@ -141,7 +141,8 @@ public class DeviceController {
         Iterator it = keys.iterator();
         while(it.hasNext()){
             String key = it.next().toString();
-            if(key.contains(name)){
+            String protocalName = key.substring(0,key.length()-2);
+            if(protocalName.equals(name)){
                 content.put(map.get(key).toString(),null);
             }
         }
