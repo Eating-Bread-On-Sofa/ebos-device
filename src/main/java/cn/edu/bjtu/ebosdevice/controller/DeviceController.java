@@ -54,8 +54,8 @@ public class DeviceController {
         for(int i=0; i<devices.size();i++){
             JSONObject jo = devices.getJSONObject(i);
             try {
-                String deviceName = jo.getString("name");
-                if (deviceName.contains(keywords)) {
+                String deviceName = jo.getString("name").toLowerCase();
+                if (deviceName.contains(keywords.toLowerCase())) {
                     Device device = deviceService.findByName(jo.getString("name"));
                     jo = deviceService.addInfo2Json(jo, device);
                 } else {
