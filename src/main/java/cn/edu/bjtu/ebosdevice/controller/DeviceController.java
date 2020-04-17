@@ -11,7 +11,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
+
 
 @RequestMapping("/api/device")
 @RestController
@@ -37,16 +41,43 @@ public class DeviceController {
                 Device device = deviceService.findByName(jo.getString("name"));
                 jo = deviceService.addInfo2Json(jo,device);
             }catch (Exception ignored){}
-            String profileName = jo.getJSONObject("profile").getString("name");
-            jo.remove("profile");
-            jo.put("profile",profileName);
-            String serviceName = jo.getJSONObject("service").getString("name");
-            jo.remove("service");
-            jo.put("service",serviceName);
-            arr.add(jo);
+            complete(arr, jo);
         }
         logService.info("查看了位于网关"+ip+" 下的设备列表");
         return arr;
+    }
+
+    @CrossOrigin
+    @GetMapping("/ip/{ip}/{keywords}")
+    public JSONArray getLikeEdgeXDevices(@PathVariable String ip,@PathVariable String keywords){
+        String url = "http://"+ip+":48081/api/v1/device";
+        JSONArray devices = new JSONArray(restTemplate.getForObject(url,JSONArray.class));
+        JSONArray res = new JSONArray();
+        for(int i=0; i<devices.size();i++){
+            JSONObject jo = devices.getJSONObject(i);
+            try {
+                String deviceName = jo.getString("name").toLowerCase();
+                if (deviceName.contains(keywords.toLowerCase())) {
+                    Device device = deviceService.findByName(jo.getString("name"));
+                    jo = deviceService.addInfo2Json(jo, device);
+                } else {
+                    continue;
+                }
+            }catch (Exception ignored){}
+            complete(res, jo);
+        }
+        logService.info("查看了位于网关"+ip+" 下的名字类似为"+keywords+"的设备列表");
+        return res;
+    }
+
+    private void complete(JSONArray res, JSONObject jo) {
+        String profileName = jo.getJSONObject("profile").getString("name");
+        jo.remove("profile");
+        jo.put("profile",profileName);
+        String serviceName = jo.getJSONObject("service").getString("name");
+        jo.remove("service");
+        jo.put("service",serviceName);
+        res.add(jo);
     }
 
     @CrossOrigin
