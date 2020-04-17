@@ -11,9 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @RequestMapping("/api/device")
 @RestController
@@ -133,22 +131,37 @@ public class DeviceController {
 
     @CrossOrigin
     @GetMapping("/protocol/{name}")
-    public JSONObject getProtocol(@PathVariable String name){
+    public JSONObject getProtocol(@PathVariable String name) {
         Map map = protocolsDict.getProtocol();
         JSONObject result = new JSONObject();
         JSONObject content = new JSONObject();
         Set keys = map.keySet();
         Iterator it = keys.iterator();
-        while(it.hasNext()){
+        while (it.hasNext()) {
             String key = it.next().toString();
-            String protocalName = key.substring(0,key.length()-2);
-            if(protocalName.equals(name)){
-                content.put(map.get(key).toString(),null);
+            String protocalName = key.substring(0, key.length() - 2);
+            if (protocalName.equals(name)) {
+                content.put(map.get(key).toString(), null);
             }
         }
-        result.put(name,content);
+        result.put(name, content);
         return result;
-}
+    }
+
+    @CrossOrigin
+    @GetMapping("/protocol")
+    public Set<String> getProtocolKeys(){
+        Map map = protocolsDict.getProtocol();
+        Set keys = map.keySet();
+        Iterator it = keys.iterator();
+        Set<String> set = new HashSet<>();
+        while (it.hasNext()) {
+            String key = it.next().toString();
+            String protocalName = key.substring(0, key.length() - 2);
+            set.add(protocalName);
+        }
+        return set;
+    }
 
     @CrossOrigin
     @GetMapping("/ping")
