@@ -6,6 +6,9 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import cn.edu.bjtu.ebosdevice.entity.Device;
 import cn.edu.bjtu.ebosdevice.service.DeviceService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
@@ -16,7 +19,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 
-
+@Api(tags = "设备管理")
 @RequestMapping("/api/device")
 @RestController
 public class DeviceController {
@@ -29,6 +32,8 @@ public class DeviceController {
     @Autowired
     ProtocolsDict protocolsDict;
 
+    @ApiOperation(value = "查看指定网关设备",notes = "需要网关ip")
+    @ApiImplicitParam(name = "ip",value = "指定网关的ip",required = true,dataTypeClass = String.class)
     @CrossOrigin
     @GetMapping("/ip/{ip}")
     public JSONArray getEdgeXDevices(@PathVariable String ip){
