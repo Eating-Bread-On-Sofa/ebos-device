@@ -25,7 +25,7 @@ public class SwaggerConfig {
 
              private ApiInfo apiInfo() {
                  return new ApiInfoBuilder()
-                         .title("device_API文档")
+                         .title("DEVICE API文档")
                          .build();
              }
 }
