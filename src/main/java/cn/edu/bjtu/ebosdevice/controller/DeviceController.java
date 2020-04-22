@@ -200,6 +200,20 @@ public class DeviceController {
     }
 
     @CrossOrigin
+    @GetMapping("/service/{ip}")
+    public JSONArray getDeviceService(@PathVariable String ip){
+        JSONArray result = new JSONArray();
+        JSONArray list = restTemplate.getForObject("http://"+ip+":48081/api/v1/deviceservice",JSONArray.class);
+        for (int i = 0; i < list.size(); i++) {
+            JSONObject service = list.getJSONObject(i);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("name", service.getString("name"));
+            result.add(jsonObject);
+        }
+        return result;
+    }
+
+    @CrossOrigin
     @GetMapping("/ping")
     public String ping(){
         return "pong";
