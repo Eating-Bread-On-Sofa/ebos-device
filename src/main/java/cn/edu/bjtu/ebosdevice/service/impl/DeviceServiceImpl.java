@@ -123,8 +123,10 @@ public class DeviceServiceImpl implements DeviceService {
     public JSONObject addInfo2Json(JSONObject jo, Device device){
         Date date = device.getDeviceCreateTime();
         String gateway = device.getGateway();
+        String description = device.getDescription();
         jo.put("createdTime", date);
         jo.put("gateway",gateway);
+        jo.put("description",description);
         return jo;
     }
 }

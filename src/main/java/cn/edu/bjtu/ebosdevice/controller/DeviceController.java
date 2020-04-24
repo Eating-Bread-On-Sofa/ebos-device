@@ -109,6 +109,7 @@ public class DeviceController {
                 Device device = new Device();
                 device.setDeviceName(name);
                 device.setGateway(ip);
+                device.setDescription(jsonObject.getString("description"));
                 deviceService.addDevice(device);
                 logService.info("向"+ip+"添加"+name+"设备成功 Edgex id=" + result);
                 return "添加成功";

@@ -23,6 +23,15 @@ public class Device {
     private String deviceLocation;
     private String edgexId;
     private String gateway;
+    private String description;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public String getGateway() {
         return gateway;
