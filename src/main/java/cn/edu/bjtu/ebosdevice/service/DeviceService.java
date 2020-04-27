@@ -1,10 +1,12 @@
 package cn.edu.bjtu.ebosdevice.service;
 
 import cn.edu.bjtu.ebosdevice.entity.Device;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Date;
 import java.util.List;
 
 public interface DeviceService {
@@ -20,4 +22,6 @@ public interface DeviceService {
     Page<Device> findDeviceByDeviceType(String deviceType, Pageable pageable);
     void changeDeviceStatus(Device dev, int status);
     JSONObject addInfo2Json(JSONObject jo, Device device);
+    List<Device> findByCreatedAfter(Date date);
+    void simplify(JSONArray output, JSONObject input);
 }
