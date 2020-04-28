@@ -42,9 +42,9 @@ public class DeviceController {
             JSONObject jo = devices.getJSONObject(i);
             try {
                 Device device = deviceService.findByName(jo.getString("name"));
-                jo = deviceService.addInfo2Json(jo,device);
+                jo = deviceService.addInfo2JsonObject(jo,device);
             }catch (Exception ignored){}
-            deviceService.simplify(arr, jo);
+            deviceService.simplifyAdd2JSONArray(arr, jo);
         }
         logService.info("查看了位于网关"+ip+" 下的设备列表");
         return arr;
@@ -58,17 +58,15 @@ public class DeviceController {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.add(Calendar.DATE,-days);
-        System.out.println(calendar.getTime());
-        JSONArray arr = new JSONArray();
-        return arr;
-    }
-
-    @ApiOperation(value = "查看所有设备")
-    @CrossOrigin
-    @GetMapping("")
-    public JSONArray getEdgeXDevices(){
-        JSONArray arr = new JSONArray();
-        return arr;
+        List<Device> devices = deviceService.findByCreatedAfter(calendar.getTime());
+        JSONArray jsonArray = new JSONArray();
+        for (Device device:devices) {
+            String url = "http://"+device.getGateway()+":48081/api/v1/device/name/"+device.getDeviceName();
+            JSONObject jo = restTemplate.getForObject(url,JSONObject.class);
+            jo = deviceService.addInfo2JsonObject(jo,device);
+            deviceService.simplifyAdd2JSONArray(jsonArray,jo);
+        }
+        return jsonArray;
     }
 
     @ApiImplicitParams({
@@ -87,12 +85,12 @@ public class DeviceController {
                 String deviceName = jo.getString("name").toLowerCase();
                 if (deviceName.contains(keywords.toLowerCase())) {
                     Device device = deviceService.findByName(jo.getString("name"));
-                    jo = deviceService.addInfo2Json(jo, device);
+                    jo = deviceService.addInfo2JsonObject(jo, device);
                 } else {
                     continue;
                 }
             }catch (Exception ignored){}
-            deviceService.simplify(res, jo);
+            deviceService.simplifyAdd2JSONArray(res, jo);
         }
         logService.info("查看了位于网关"+ip+" 下的名字类似为"+keywords+"的设备列表");
         return res;
@@ -105,7 +103,7 @@ public class DeviceController {
         JSONObject jo = restTemplate.getForObject(url,JSONObject.class);
         try {
             Device device = deviceService.findByName(jo.getString("name"));
-            jo = deviceService.addInfo2Json(jo,device);
+            jo = deviceService.addInfo2JsonObject(jo,device);
         }catch (Exception ignored){}
         logService.info("查看了位于网关"+ip+" 下id="+id+" 的设备信息");
         return jo;

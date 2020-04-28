@@ -121,7 +121,7 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public JSONObject addInfo2Json(JSONObject jo, Device device){
+    public JSONObject addInfo2JsonObject(JSONObject jo, Device device){
         Date date = device.getDeviceCreateTime();
         String gateway = device.getGateway();
         String description = device.getDescription();
@@ -137,7 +137,7 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public void simplify(JSONArray output, JSONObject input){
+    public void simplifyAdd2JSONArray(JSONArray output, JSONObject input){
         String profileName = input.getJSONObject("profile").getString("name");
         input.remove("profile");
         input.put("profile",profileName);

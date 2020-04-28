@@ -21,7 +21,7 @@ public interface DeviceService {
     boolean deleteByName(String name);
     Page<Device> findDeviceByDeviceType(String deviceType, Pageable pageable);
     void changeDeviceStatus(Device dev, int status);
-    JSONObject addInfo2Json(JSONObject jo, Device device);
+    JSONObject addInfo2JsonObject(JSONObject jo, Device device);
     List<Device> findByCreatedAfter(Date date);
-    void simplify(JSONArray output, JSONObject input);
+    void simplifyAdd2JSONArray(JSONArray output, JSONObject input);
 }
