@@ -66,9 +66,11 @@ public class DeviceController {
             JSONArray details = new JSONArray();
             for (Device device : devices) {
                 String url = "http://" + device.getGateway() + ":48081/api/v1/device/name/" + device.getDeviceName();
-                JSONObject jo = restTemplate.getForObject(url, JSONObject.class);
-                jo = deviceService.addInfo2JsonObject(jo, device);
-                deviceService.simplifyAdd2JSONArray(details, jo);
+                try {
+                    JSONObject jo = restTemplate.getForObject(url, JSONObject.class);
+                    jo = deviceService.addInfo2JsonObject(jo, device);
+                    deviceService.simplifyAdd2JSONArray(details, jo);
+                }catch (HttpClientErrorException.NotFound ignored){}
             }
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("startDate",start);

@@ -8,9 +8,8 @@ import java.util.Date;
 @Document
 public class Device {
     @Id
-    private String deviceName;
-
     private String deviceId;
+    private String deviceName;
     private String deviceDesc;
     private String deviceType;
     private int deviceStatus;
