@@ -25,4 +25,5 @@ public interface DeviceRepository extends MongoRepository<Device,String> {
     Page<Device> findDeviceByDeviceType(String deviceType, Pageable pageable);
     List<Device> findAll();
     List<Device> findByDeviceCreateTimeAfter(Date date);
+    List<Device> findByDeviceCreateTimeBetween(Date start, Date end);
 }

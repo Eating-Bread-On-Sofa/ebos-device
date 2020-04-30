@@ -24,4 +24,5 @@ public interface DeviceService {
     JSONObject addInfo2JsonObject(JSONObject jo, Device device);
     List<Device> findByCreatedAfter(Date date);
     void simplifyAdd2JSONArray(JSONArray output, JSONObject input);
+    List<Device> findByCreatedBetween(Date start, Date end);
 }

@@ -50,21 +50,33 @@ public class DeviceController {
         return arr;
     }
 
-    @ApiOperation(value = "查看指定创建时间范围的网关设备",notes = "需要近几天的天数 int days")
-    @ApiImplicitParam(name = "days",value = "查询范围，距现在几天,int类型",required = true, paramType = "query")
+    @ApiOperation(value = "查看指定创建时间范围的网关设备",notes = "范围 天数 int days")
+    @ApiImplicitParam(name = "days",value = "查询天数范围,int类型",required = true, paramType = "query")
     @CrossOrigin
     @GetMapping("/days")
     public JSONArray getEdgeXDevices(@RequestParam int days){
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        calendar.add(Calendar.DATE,-days);
-        List<Device> devices = deviceService.findByCreatedAfter(calendar.getTime());
         JSONArray jsonArray = new JSONArray();
-        for (Device device:devices) {
-            String url = "http://"+device.getGateway()+":48081/api/v1/device/name/"+device.getDeviceName();
-            JSONObject jo = restTemplate.getForObject(url,JSONObject.class);
-            jo = deviceService.addInfo2JsonObject(jo,device);
-            deviceService.simplifyAdd2JSONArray(jsonArray,jo);
+        Date end = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(end);
+        for (int i = 0; i < days; i++) {
+            calendar.add(Calendar.DATE, -1);
+            Date start = calendar.getTime();
+            List<Device> devices = deviceService.findByCreatedBetween(start,end);
+            JSONArray details = new JSONArray();
+            for (Device device : devices) {
+                String url = "http://" + device.getGateway() + ":48081/api/v1/device/name/" + device.getDeviceName();
+                JSONObject jo = restTemplate.getForObject(url, JSONObject.class);
+                jo = deviceService.addInfo2JsonObject(jo, device);
+                deviceService.simplifyAdd2JSONArray(details, jo);
+            }
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("startDate",start);
+            jsonObject.put("endDate",end);
+            jsonObject.put("details",details);
+            jsonObject.put("count",details.size());
+            jsonArray.add(jsonObject);
+            end = start;
         }
         return jsonArray;
     }

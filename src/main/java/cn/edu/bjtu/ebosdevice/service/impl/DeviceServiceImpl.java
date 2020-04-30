@@ -137,6 +137,11 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
+    public List<Device> findByCreatedBetween(Date start, Date end){
+        return deviceRepository.findByDeviceCreateTimeBetween(start, end);
+    }
+
+    @Override
     public void simplifyAdd2JSONArray(JSONArray output, JSONObject input){
         String profileName = input.getJSONObject("profile").getString("name");
         input.remove("profile");
