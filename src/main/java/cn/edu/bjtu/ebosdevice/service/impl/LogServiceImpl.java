@@ -2,6 +2,8 @@ package cn.edu.bjtu.ebosdevice.service.impl;
 
 import cn.edu.bjtu.ebosdevice.entity.Log;
 import cn.edu.bjtu.ebosdevice.service.LogService;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -17,51 +19,63 @@ public class LogServiceImpl implements LogService {
     @Autowired
     private MongoTemplate mongoTemplate;
     @Override
-    public void debug(String massage){
+    public void debug(String message){
         Log log = new Log();
-        log.setData(new Date());
+        log.setDate(new Date());
         log.setCategory("debug");
-        log.setMassage(massage);
-        log.setSource(getTop());
-        mongoTemplate.save(log);
-    }
-    @Override
-    public void info(String massage){
-        Log log = new Log();
-        log.setData(new Date());
-        log.setCategory("info");
-        log.setMassage(massage);
+        log.setMessage(message);
         log.setSource(serviceName);
         mongoTemplate.save(log);
     }
     @Override
-    public void warn(String massage){
+    public void info(String message){
         Log log = new Log();
-        log.setData(new Date());
+        log.setDate(new Date());
+        log.setCategory("info");
+        log.setMessage(message);
+        log.setSource(serviceName);
+        mongoTemplate.save(log);
+    }
+    @Override
+    public void warn(String message){
+        Log log = new Log();
+        log.setDate(new Date());
         log.setCategory("warn");
-        log.setMassage(massage);
-        log.setSource(getTop());
+        log.setMessage(message);
+        log.setSource(serviceName);
         mongoTemplate.save(log);
     }
     @Override
-    public void error(String massage){
+    public void error(String message){
         Log log = new Log();
-        log.setData(new Date());
-        log.setCategory("debug");
-        log.setMassage(massage);
-        log.setSource(getTop());
+        log.setDate(new Date());
+        log.setCategory("error");
+        log.setMessage(message);
+        log.setSource(serviceName);
         mongoTemplate.save(log);
     }
     @Override
-    public String findAll(){
+    public JSONArray findAll(){
         List<Log> list = mongoTemplate.findAll(Log.class);
-        return list2str(list);
+        return list2json(list);
     }
     @Override
-    public String findLogByCategory(String category){
+    public JSONArray findLogByCategory(String category){
         Query query = Query.query(Criteria.where("category").is(category));
         List<Log> list = mongoTemplate.find(query , Log.class);
-        return list2str(list);
+        return list2json(list);
+    }
+    @Override
+    public JSONArray findLogBySource(String source){
+        Query query = Query.query(Criteria.where("source").is(source));
+        List<Log> list = mongoTemplate.find(query , Log.class);
+        return list2json(list);
+    }
+    @Override
+    public JSONArray findLogBySourceAndCategory(String source, String category){
+        Query query = Query.query(Criteria.where("source").is(source).and("category").is(category));
+        List<Log> list = mongoTemplate.find(query , Log.class);
+        return list2json(list);
     }
     @Override
     public String getTop() {
@@ -94,13 +108,12 @@ public class LogServiceImpl implements LogService {
         }
     }
 
-    private String list2str(List<Log> list){
-        //使用StringBuilder提高性能
-        StringBuilder stringBuilder = new StringBuilder();
+    private JSONArray list2json(List<Log> list){
+        JSONArray jsonArray = new JSONArray();
         for(Log log:list){
-            stringBuilder.append(log.getData()).append("   [").append(log.getCategory()).append("]   ").append(log.getSource()).append(" - ").append(log.getMassage()).append("\n");
+            JSONObject jsonObject = (JSONObject) JSONObject.toJSON(log);
+            jsonArray.add(jsonObject);
         }
-        if(stringBuilder.length()==0){return "日志为空";}else {
-            return stringBuilder.substring(0,stringBuilder.length()-1);}
+        return jsonArray;
     }
 }

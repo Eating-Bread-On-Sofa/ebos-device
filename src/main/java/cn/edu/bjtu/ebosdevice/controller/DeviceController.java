@@ -8,16 +8,14 @@ import cn.edu.bjtu.ebosdevice.entity.Device;
 import cn.edu.bjtu.ebosdevice.service.DeviceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.*;
 
 @Api(tags = "设备管理")
 @RequestMapping("/api/device")
@@ -33,7 +31,7 @@ public class DeviceController {
     ProtocolsDict protocolsDict;
 
     @ApiOperation(value = "查看指定网关设备",notes = "需要网关ip")
-    @ApiImplicitParam(name = "ip",value = "指定网关的ip",required = true,dataTypeClass = String.class)
+    @ApiImplicitParam(name = "ip",value = "指定网关的ip",required = true,paramType = "path",dataTypeClass = String.class)
     @CrossOrigin
     @GetMapping("/ip/{ip}")
     public JSONArray getEdgeXDevices(@PathVariable String ip){
@@ -44,14 +42,37 @@ public class DeviceController {
             JSONObject jo = devices.getJSONObject(i);
             try {
                 Device device = deviceService.findByName(jo.getString("name"));
-                jo = deviceService.addInfo2Json(jo,device);
+                jo = deviceService.addInfo2JsonObject(jo,device);
             }catch (Exception ignored){}
-            complete(arr, jo);
+            deviceService.simplifyAdd2JSONArray(arr, jo);
         }
         logService.info("查看了位于网关"+ip+" 下的设备列表");
         return arr;
     }
 
+    @ApiOperation(value = "查看指定创建时间范围的网关设备",notes = "需要近几天的天数 int days")
+    @ApiImplicitParam(name = "days",value = "查询范围，距现在几天,int类型",required = true, paramType = "query")
+    @CrossOrigin
+    @GetMapping("/days")
+    public JSONArray getEdgeXDevices(@RequestParam int days){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        calendar.add(Calendar.DATE,-days);
+        List<Device> devices = deviceService.findByCreatedAfter(calendar.getTime());
+        JSONArray jsonArray = new JSONArray();
+        for (Device device:devices) {
+            String url = "http://"+device.getGateway()+":48081/api/v1/device/name/"+device.getDeviceName();
+            JSONObject jo = restTemplate.getForObject(url,JSONObject.class);
+            jo = deviceService.addInfo2JsonObject(jo,device);
+            deviceService.simplifyAdd2JSONArray(jsonArray,jo);
+        }
+        return jsonArray;
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "ip",value = "指定网关的ip",required = true,paramType = "path",dataTypeClass = String.class),
+            @ApiImplicitParam(name = "keywords",value = "关键字",required = true,paramType = "path",dataTypeClass = String.class)
+    })
     @CrossOrigin
     @GetMapping("/ip/{ip}/{keywords}")
     public JSONArray getLikeEdgeXDevices(@PathVariable String ip,@PathVariable String keywords){
@@ -64,25 +85,15 @@ public class DeviceController {
                 String deviceName = jo.getString("name").toLowerCase();
                 if (deviceName.contains(keywords.toLowerCase())) {
                     Device device = deviceService.findByName(jo.getString("name"));
-                    jo = deviceService.addInfo2Json(jo, device);
+                    jo = deviceService.addInfo2JsonObject(jo, device);
                 } else {
                     continue;
                 }
             }catch (Exception ignored){}
-            complete(res, jo);
+            deviceService.simplifyAdd2JSONArray(res, jo);
         }
         logService.info("查看了位于网关"+ip+" 下的名字类似为"+keywords+"的设备列表");
         return res;
-    }
-
-    private void complete(JSONArray res, JSONObject jo) {
-        String profileName = jo.getJSONObject("profile").getString("name");
-        jo.remove("profile");
-        jo.put("profile",profileName);
-        String serviceName = jo.getJSONObject("service").getString("name");
-        jo.remove("service");
-        jo.put("service",serviceName);
-        res.add(jo);
     }
 
     @CrossOrigin
@@ -92,7 +103,7 @@ public class DeviceController {
         JSONObject jo = restTemplate.getForObject(url,JSONObject.class);
         try {
             Device device = deviceService.findByName(jo.getString("name"));
-            jo = deviceService.addInfo2Json(jo,device);
+            jo = deviceService.addInfo2JsonObject(jo,device);
         }catch (Exception ignored){}
         logService.info("查看了位于网关"+ip+" 下id="+id+" 的设备信息");
         return jo;
@@ -109,6 +120,7 @@ public class DeviceController {
                 Device device = new Device();
                 device.setDeviceName(name);
                 device.setGateway(ip);
+                device.setDescription(jsonObject.getString("description"));
                 deviceService.addDevice(device);
                 logService.info("向"+ip+"添加"+name+"设备成功 Edgex id=" + result);
                 return "添加成功";
@@ -197,6 +209,20 @@ public class DeviceController {
             set.add(protocalName);
         }
         return set;
+    }
+
+    @CrossOrigin
+    @GetMapping("/service/{ip}")
+    public JSONArray getDeviceService(@PathVariable String ip){
+        JSONArray result = new JSONArray();
+        JSONArray list = restTemplate.getForObject("http://"+ip+":48081/api/v1/deviceservice",JSONArray.class);
+        for (int i = 0; i < list.size(); i++) {
+            JSONObject service = list.getJSONObject(i);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("name", service.getString("name"));
+            result.add(jsonObject);
+        }
+        return result;
     }
 
     @CrossOrigin

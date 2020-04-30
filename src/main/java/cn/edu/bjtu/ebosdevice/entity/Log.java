@@ -11,8 +11,8 @@ public class Log implements Serializable {
     @Id
     private String id;
     private String category;
-    private String massage;
-    private Date data;
+    private String message;
+    private Date date;
     private String source;
 
     public String getId() {
@@ -31,20 +31,20 @@ public class Log implements Serializable {
         this.category = category;
     }
 
-    public String getMassage() {
-        return massage;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMassage(String massage) {
-        this.massage = massage;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
-    public Date getData() {
-        return data;
+    public Date getDate() {
+        return date;
     }
 
-    public void setData(Date data) {
-        this.data = data;
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public String getSource() {

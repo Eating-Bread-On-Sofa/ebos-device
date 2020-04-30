@@ -3,6 +3,7 @@ package cn.edu.bjtu.ebosdevice.service.impl;
 import cn.edu.bjtu.ebosdevice.dao.DeviceRepository;
 import cn.edu.bjtu.ebosdevice.entity.Device;
 import cn.edu.bjtu.ebosdevice.service.DeviceService;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,11 +121,29 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public JSONObject addInfo2Json(JSONObject jo, Device device){
+    public JSONObject addInfo2JsonObject(JSONObject jo, Device device){
         Date date = device.getDeviceCreateTime();
         String gateway = device.getGateway();
+        String description = device.getDescription();
         jo.put("createdTime", date);
         jo.put("gateway",gateway);
+        jo.put("description",description);
         return jo;
+    }
+
+    @Override
+    public List<Device> findByCreatedAfter(Date date){
+        return deviceRepository.findByDeviceCreateTimeAfter(date);
+    }
+
+    @Override
+    public void simplifyAdd2JSONArray(JSONArray output, JSONObject input){
+        String profileName = input.getJSONObject("profile").getString("name");
+        input.remove("profile");
+        input.put("profile",profileName);
+        String serviceName = input.getJSONObject("service").getString("name");
+        input.remove("service");
+        input.put("service",serviceName);
+        output.add(input);
     }
 }

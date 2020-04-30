@@ -1,5 +1,6 @@
 package cn.edu.bjtu.ebosdevice.service;
 
+import com.alibaba.fastjson.JSONArray;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,7 +15,11 @@ public interface LogService {
 
     String getTop();
 
-    String findLogByCategory(String category);
+    JSONArray findLogByCategory(String category);
 
-    String findAll();
+    JSONArray findAll();
+
+    JSONArray findLogBySource(String source);
+
+    JSONArray findLogBySourceAndCategory(String source, String category);
 }
