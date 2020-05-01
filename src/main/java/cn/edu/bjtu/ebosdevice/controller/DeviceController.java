@@ -241,6 +241,14 @@ public class DeviceController {
     }
 
     @CrossOrigin
+    @GetMapping("/details/{ip}/{id}")
+    public JSONObject getDetails(@PathVariable String ip, @PathVariable String id){return deviceService.getDeviceDetail(ip, id);}
+
+    @CrossOrigin
+    @GetMapping("/online/{ip}")
+    public JSONArray getOnline(@PathVariable String ip){return deviceService.getOnlineDevices(ip);}
+
+    @CrossOrigin
     @GetMapping("/ping")
     public String ping(){
         return "pong";

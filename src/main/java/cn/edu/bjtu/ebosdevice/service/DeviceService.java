@@ -25,4 +25,6 @@ public interface DeviceService {
     List<Device> findByCreatedAfter(Date date);
     void simplifyAdd2JSONArray(JSONArray output, JSONObject input);
     List<Device> findByCreatedBetween(Date start, Date end);
+    JSONObject getDeviceDetail(String ip,String id);
+    JSONArray getOnlineDevices(String ip);
 }
