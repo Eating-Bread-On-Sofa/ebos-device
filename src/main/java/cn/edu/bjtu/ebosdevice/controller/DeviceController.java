@@ -132,6 +132,7 @@ public class DeviceController {
             try {
                 String result = restTemplate.postForObject(url, jsonObject, String.class);
                 Device device = new Device();
+                device.setDeviceCreateTime(new Date());
                 device.setDeviceName(name);
                 device.setGateway(ip);
                 device.setDescription(jsonObject.getString("description"));
