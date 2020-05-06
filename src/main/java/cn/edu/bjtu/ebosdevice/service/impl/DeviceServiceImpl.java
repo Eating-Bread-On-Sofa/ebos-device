@@ -42,10 +42,8 @@ public class DeviceServiceImpl implements DeviceService {
     public String addDevice(Device device) {
         Device findDevice = deviceRepository.findByDeviceName(device.getDeviceName());
         if (findDevice == null) {
-            Device device1 = deviceRepository.save(device);
-            ObjectId objectId = new ObjectId(device1.getDeviceId());
-            device1.setDeviceCreateTime(objectId.getDate());
-            deviceRepository.save(device1);
+            device.setDeviceCreateTime(new Date());
+            deviceRepository.save(device);
             return "添加成功";
         } else {
             return "名称重复";
