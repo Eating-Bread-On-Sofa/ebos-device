@@ -10,7 +10,7 @@
     </parent>
     <groupId>cn.edu.bjtu</groupId>
     <artifactId>ebos-device</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0-baguette</version>
     <name>ebos-device</name>
     <description>device management for Edge Bjtu On Server</description>
 
