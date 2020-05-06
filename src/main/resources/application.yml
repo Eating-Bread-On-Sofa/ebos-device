@@ -23,8 +23,6 @@ spring:
 server:
   edgex: localhost
   port: 8081
-  tomcat:
-    max-threads: 10
 mq: activemq
 protocols:
   protocol:
