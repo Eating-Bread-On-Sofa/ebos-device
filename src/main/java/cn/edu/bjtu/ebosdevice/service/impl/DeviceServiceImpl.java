@@ -57,12 +57,12 @@ public class DeviceServiceImpl implements DeviceService {
             if (findDevice != null) {
                 deviceRepository.deleteByDeviceId(findDevice.getDeviceId());
             }
-            Device device1 = deviceRepository.save(device);
-            ObjectId objectId = new ObjectId(device1.getDeviceId());
-            device1.setDeviceCreateTime(objectId.getDate());
-            deviceRepository.save(device1);
+            device.setDeviceCreateTime(new Date());
+            deviceRepository.save(device);
             return "成功";
-        }catch (Exception e){return e.toString();}
+        }catch (Exception e){
+            e.printStackTrace();
+            return e.toString();}
     }
 
     @Override

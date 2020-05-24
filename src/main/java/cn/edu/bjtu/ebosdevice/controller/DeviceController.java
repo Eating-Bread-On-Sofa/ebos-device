@@ -169,6 +169,7 @@ public class DeviceController {
                 result.put(jsonObject.getString("name"), r);
             } catch (Exception e) {
                 result.put(jsonObject.getString("name"), e.toString());
+                e.printStackTrace();
             }
         }
         logService.info("恢复结果"+result.toJSONString());

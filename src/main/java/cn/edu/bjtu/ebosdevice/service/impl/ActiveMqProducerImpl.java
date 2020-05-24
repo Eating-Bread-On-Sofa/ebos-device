@@ -1,12 +1,12 @@
 package cn.edu.bjtu.ebosdevice.service.impl;
 
-import cn.edu.bjtu.ebosdevice.service.MqProducer;
-import org.apache.activemq.command.ActiveMQTopic;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsMessagingTemplate;
-import org.springframework.stereotype.Service;
+        import cn.edu.bjtu.ebosdevice.service.MqProducer;
+        import org.apache.activemq.command.ActiveMQTopic;
+        import org.springframework.beans.factory.annotation.Autowired;
+        import org.springframework.jms.core.JmsMessagingTemplate;
+        import org.springframework.stereotype.Service;
 
-import javax.jms.Destination;
+        import javax.jms.Destination;
 
 @Service("activemq")
 public class ActiveMqProducerImpl implements MqProducer {
