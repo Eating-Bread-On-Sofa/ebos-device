@@ -10,10 +10,11 @@ import java.util.Date;
 public class Log implements Serializable {
     @Id
     private String id;
-    private String category;
-    private String message;
     private Date date;
     private String source;
+    private String category;
+    private String function;
+    private String message;
 
     public String getId() {
         return id;
@@ -21,22 +22,6 @@ public class Log implements Serializable {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 
     public Date getDate() {
@@ -54,4 +39,29 @@ public class Log implements Serializable {
     public void setSource(String source) {
         this.source = source;
     }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getFunction() {
+        return function;
+    }
+
+    public void setFunction(String function) {
+        this.function = function;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
 }

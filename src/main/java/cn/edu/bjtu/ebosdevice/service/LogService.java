@@ -13,13 +13,22 @@ public interface LogService {
 
     void error(String message);
 
+    void create(String message);
+
+    void delete(String message);
+
+    void update(String message);
+
+    void retrieve(String message);
+
     String getTop();
 
-    JSONArray findLogByCategory(String category);
-
     JSONArray findAll();
+
+    JSONArray findLogByCategory(String category);
 
     JSONArray findLogBySource(String source);
 
     JSONArray findLogBySourceAndCategory(String source, String category);
+
 }

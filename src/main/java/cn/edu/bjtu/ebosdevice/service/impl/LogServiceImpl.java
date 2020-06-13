@@ -15,9 +15,12 @@ import java.util.List;
 
 @Service
 public class LogServiceImpl implements LogService {
+
     private static String serviceName = "设备管理";
+
     @Autowired
     private MongoTemplate mongoTemplate;
+
     @Override
     public void debug(String message){
         Log log = new Log();
@@ -54,29 +57,72 @@ public class LogServiceImpl implements LogService {
         log.setSource(serviceName);
         mongoTemplate.save(log);
     }
+
+    @Override
+    public void create(String message) {
+        Log log = new Log();
+        log.setDate(new Date());
+        log.setSource(serviceName);
+        log.setFunction("create");
+        log.setMessage(message);
+        mongoTemplate.save(log);
+    }
+
+    @Override
+    public void delete(String message) {
+        Log log = new Log();
+        log.setDate(new Date());
+        log.setSource(serviceName);
+        log.setFunction("detele");
+        log.setMessage(message);
+        mongoTemplate.save(log);
+    }
+
+    @Override
+    public void update(String message) {
+        Log log = new Log();
+        log.setDate(new Date());
+        log.setSource(serviceName);
+        log.setFunction("update");
+        log.setMessage(message);
+        mongoTemplate.save(log);
+    }
+
+    @Override
+    public void retrieve(String message) {
+        Log log = new Log();
+        log.setDate(new Date());
+        log.setSource(serviceName);
+        log.setFunction("retrieve");
+        log.setMessage(message);
+        mongoTemplate.save(log);
+    }
+
     @Override
     public JSONArray findAll(){
-        List<Log> list = mongoTemplate.findAll(Log.class);
+        List<Log> list = mongoTemplate.findAll(Log.class,"log");
         return list2json(list);
     }
+
     @Override
     public JSONArray findLogByCategory(String category){
         Query query = Query.query(Criteria.where("category").is(category));
-        List<Log> list = mongoTemplate.find(query , Log.class);
+        List<Log> list = mongoTemplate.find(query,Log.class,"log");
         return list2json(list);
     }
     @Override
     public JSONArray findLogBySource(String source){
         Query query = Query.query(Criteria.where("source").is(source));
-        List<Log> list = mongoTemplate.find(query , Log.class);
+        List<Log> list = mongoTemplate.find(query,Log.class,"log");
         return list2json(list);
     }
     @Override
     public JSONArray findLogBySourceAndCategory(String source, String category){
         Query query = Query.query(Criteria.where("source").is(source).and("category").is(category));
-        List<Log> list = mongoTemplate.find(query , Log.class);
+        List<Log> list = mongoTemplate.find(query,Log.class,"log");
         return list2json(list);
     }
+
     @Override
     public String getTop() {
         // 获取堆栈信息
