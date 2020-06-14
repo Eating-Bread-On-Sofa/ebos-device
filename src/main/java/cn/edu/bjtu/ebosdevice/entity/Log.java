@@ -13,7 +13,7 @@ public class Log implements Serializable {
     private Date date;
     private String source;
     private String category;
-    private String function;
+    private String operation;
     private String message;
 
     public String getId() {
@@ -48,12 +48,12 @@ public class Log implements Serializable {
         this.category = category;
     }
 
-    public String getFunction() {
-        return function;
+    public String getOperation() {
+        return operation;
     }
 
-    public void setFunction(String function) {
-        this.function = function;
+    public void setOperation(String operation) {
+        this.operation = operation;
     }
 
     public String getMessage() {
