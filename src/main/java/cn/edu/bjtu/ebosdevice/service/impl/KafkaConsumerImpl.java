@@ -5,6 +5,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -20,7 +21,8 @@ public class KafkaConsumerImpl implements MqConsumer {
 
     @Override
     public String subscribe(){
-        ConsumerRecords<String, String> records = kafkaConsumer.poll(100);
+        @SuppressWarnings("unchecked")
+        ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(100));
         for (ConsumerRecord<String, String> record : records) {
             System.out.println("-----------------");
             System.out.printf("offset = %d, value = %s", record.offset(), record.value());

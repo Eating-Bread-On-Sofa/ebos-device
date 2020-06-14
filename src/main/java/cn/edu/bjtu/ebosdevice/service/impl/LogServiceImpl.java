@@ -77,44 +77,38 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public JSONArray findAll() {
-        List<Log> list = mongoTemplate.findAll(Log.class,"log");
-        return list2json(list);
+    public List<Log> findAll() {
+        return mongoTemplate.findAll(Log.class,"log");
     }
 
     @Override
-    public JSONArray find(Date startDate, Date endDate, String source, String category, String operation) {
+    public List<Log> find(Date startDate, Date endDate, String source, String category, String operation) {
         if (source.equals("全部")) {
             if (category.equals("all")) {
                 if (operation.equals("all")) {
                     Query query = Query.query(Criteria.where("date").gte(startDate).lte(endDate));
-                    List<Log> list = mongoTemplate.find(query, Log.class, "log");
-                    return list2json(list);
+                    return mongoTemplate.find(query, Log.class, "log");
                 } else if (operation.equals("null")) {
                     Query query = Query.query(Criteria.where("date").gte(startDate).lte(endDate).and("operation").is(null));
-                    List<Log> list = mongoTemplate.find(query, Log.class, "log");
-                    return list2json(list);
+                    return mongoTemplate.find(query, Log.class, "log");
                 } else {
                     Query query1 = Query.query(Criteria.where("date").gte(startDate).lte(endDate).and("operation").is(operation));
                     List<Log> list1 = mongoTemplate.find(query1, Log.class, "log");
                     Query query2 = Query.query(Criteria.where("date").gte(startDate).lte(endDate).and("operation").is(null));
                     List<Log> list = mongoTemplate.find(query2, Log.class, "log");
                     list.addAll(list1);
-                    return list2json(list);
+                    return list;
                 }
             } else if (category.equals("null")) {
                 if (operation.equals("all")) {
                     Query query = Query.query(Criteria.where("date").gte(startDate).lte(endDate).and("category").is(null));
-                    List<Log> list = mongoTemplate.find(query, Log.class, "log");
-                    return list2json(list);
+                    return mongoTemplate.find(query, Log.class, "log");
                 } else if (operation.equals("null")) {
                     Query query = Query.query(Criteria.where("date").gte(startDate).lte(endDate).and("category").is(null).and("operation").is(null));
-                    List<Log> list = mongoTemplate.find(query, Log.class, "log");
-                    return list2json(list);
+                    return mongoTemplate.find(query, Log.class, "log");
                 } else {
                     Query query = Query.query(Criteria.where("date").gte(startDate).lte(endDate).and("operation").is(operation));
-                    List<Log> list = mongoTemplate.find(query, Log.class, "log");
-                    return list2json(list);
+                    return mongoTemplate.find(query, Log.class, "log");
                 }
             }else{
                 if (operation.equals("all")) {
@@ -123,51 +117,45 @@ public class LogServiceImpl implements LogService {
                     Query query2 = Query.query(Criteria.where("date").gte(startDate).lte(endDate).and("category").is(null));
                     List<Log> list = mongoTemplate.find(query2, Log.class, "log");
                     list.addAll(list1);
-                    return list2json(list);
+                    return list;
                 } else if (operation.equals("null")) {
                     Query query = Query.query(Criteria.where("date").gte(startDate).lte(endDate).and("category").is(category));
-                    List<Log> list = mongoTemplate.find(query, Log.class, "log");
-                    return list2json(list);
+                    return mongoTemplate.find(query, Log.class, "log");
                 } else {
                     Query query1 = Query.query(Criteria.where("date").gte(startDate).lte(endDate).and("operation").is(operation));
                     List<Log> list1 = mongoTemplate.find(query1, Log.class, "log");
                     Query query2 = Query.query(Criteria.where("date").gte(startDate).lte(endDate).and("category").is(category));
                     List<Log> list = mongoTemplate.find(query2, Log.class, "log");
                     list.addAll(list1);
-                    return list2json(list);
+                    return list;
                 }
             }
         } else {
             if (category.equals("all")) {
                 if (operation.equals("all")) {
                     Query query = Query.query(Criteria.where("date").gte(startDate).lte(endDate).and("source").is(source));
-                    List<Log> list = mongoTemplate.find(query, Log.class, "log");
-                    return list2json(list);
+                    return mongoTemplate.find(query, Log.class, "log");
                 } else if (operation.equals("null")) {
                     Query query = Query.query(Criteria.where("date").gte(startDate).lte(endDate).and("source").is(source).and("operation").is(null));
-                    List<Log> list = mongoTemplate.find(query, Log.class, "log");
-                    return list2json(list);
+                    return mongoTemplate.find(query, Log.class, "log");
                 } else {
                     Query query1 = Query.query(Criteria.where("date").gte(startDate).lte(endDate).and("source").is(source).and("operation").is(operation));
                     List<Log> list1 = mongoTemplate.find(query1, Log.class, "log");
                     Query query2 = Query.query(Criteria.where("date").gte(startDate).lte(endDate).and("source").is(source).and("operation").is(null));
                     List<Log> list = mongoTemplate.find(query2, Log.class, "log");
                     list.addAll(list1);
-                    return list2json(list);
+                    return list;
                 }
             } else if (category.equals("null")) {
                 if (operation.equals("all")) {
                     Query query = Query.query(Criteria.where("date").gte(startDate).lte(endDate).and("source").is(source).and("category").is(null));
-                    List<Log> list = mongoTemplate.find(query, Log.class, "log");
-                    return list2json(list);
+                    return mongoTemplate.find(query, Log.class, "log");
                 } else if (operation.equals("null")) {
                     Query query = Query.query(Criteria.where("date").gte(startDate).lte(endDate).and("source").is(source).and("category").is(null).and("operation").is(null));
-                    List<Log> list = mongoTemplate.find(query, Log.class, "log");
-                    return list2json(list);
+                    return mongoTemplate.find(query, Log.class, "log");
                 } else {
                     Query query = Query.query(Criteria.where("date").gte(startDate).lte(endDate).and("source").is(source).and("operation").is(operation));
-                    List<Log> list = mongoTemplate.find(query, Log.class, "log");
-                    return list2json(list);
+                    return mongoTemplate.find(query, Log.class, "log");
                 }
             }else{
                 if (operation.equals("all")) {
@@ -176,70 +164,63 @@ public class LogServiceImpl implements LogService {
                     Query query2 = Query.query(Criteria.where("date").gte(startDate).lte(endDate).and("source").is(source).and("category").is(null));
                     List<Log> list = mongoTemplate.find(query2, Log.class, "log");
                     list.addAll(list1);
-                    return list2json(list);
+                    return list;
                 } else if (operation.equals("null")) {
                     Query query = Query.query(Criteria.where("date").gte(startDate).lte(endDate).and("source").is(source).and("category").is(category));
-                    List<Log> list = mongoTemplate.find(query, Log.class, "log");
-                    return list2json(list);
+                    return mongoTemplate.find(query, Log.class, "log");
                 } else {
                     Query query1 = Query.query(Criteria.where("date").gte(startDate).lte(endDate).and("source").is(source).and("operation").is(operation));
                     List<Log> list1 = mongoTemplate.find(query1, Log.class, "log");
                     Query query2 = Query.query(Criteria.where("date").gte(startDate).lte(endDate).and("source").is(source).and("category").is(category));
                     List<Log> list = mongoTemplate.find(query2, Log.class, "log");
                     list.addAll(list1);
-                    return list2json(list);
+                    return list;
                 }
             }
         }
     }
 
     @Override
-    public JSONArray findLogByCategory(String category){
+    public List<Log> findLogByCategory(String category){
         Query query = Query.query(Criteria.where("category").is(category));
-        List<Log> list = mongoTemplate.find(query , Log.class);
-        return list2json(list);
+        return mongoTemplate.find(query , Log.class);
     }
 
     @Override
-    public JSONArray findLogBySource(String source){
+    public List<Log> findLogBySource(String source){
         Query query = Query.query(Criteria.where("source").is(source));
-        List<Log> list = mongoTemplate.find(query,Log.class,"log");
-        return list2json(list);
+        return mongoTemplate.find(query,Log.class,"log");
     }
 
     @Override
-    public JSONArray findLogByOperation(String operation) {
+    public List<Log> findLogByOperation(String operation) {
         Query query = Query.query(Criteria.where("operation").is(operation));
-        List<Log> list = mongoTemplate.find(query , Log.class,"log");
-        return list2json(list);
+        return mongoTemplate.find(query , Log.class,"log");
     }
 
     @Override
-    public JSONArray findLogByDate(Date startDate, Date endDate) {
+    public List<Log> findLogByDate(Date startDate, Date endDate) {
         Query query = Query.query(Criteria.where("date").gte(startDate).lte(endDate));
-        List<Log> list = mongoTemplate.find(query , Log.class,"log");
-        return list2json(list);
+        return mongoTemplate.find(query , Log.class,"log");
     }
 
     @Override
-    public JSONArray findLogBySourceAndDate(Date startDate, Date endDate, String source) {
+    public List<Log> findLogBySourceAndDate(Date startDate, Date endDate, String source) {
         Query query = Query.query(Criteria.where("date").gte(startDate).lte(endDate).and("source").is(source));
-        List<Log> list = mongoTemplate.find(query , Log.class,"log");
-        return list2json(list);
+        return mongoTemplate.find(query , Log.class,"log");
     }
 
     @Override
-    public JSONArray findLogBySourceAndCategory(String source, String category){
+    public List<Log> findLogBySourceAndCategory(String source, String category){
         Query query = Query.query(Criteria.where("source").is(source).and("category").is(category));
-        List<Log> list = mongoTemplate.find(query , Log.class,"log");
-        return list2json(list);
+        return mongoTemplate.find(query , Log.class,"log");
     }
 
     @Override
-    public JSONArray findLogBySourceAndOperation(String source, String operation) {
+    public List<Log> findLogBySourceAndOperation(String source, String operation) {
         Query query = Query.query(Criteria.where("source").is(source).and("operation").is(operation));
-        List<Log> list = mongoTemplate.find(query , Log.class,"log");
-        return list2json(list);
+        return mongoTemplate.find(query , Log.class,"log");
+
     }
 
     public String getTop() {
@@ -270,14 +251,5 @@ public class LogServiceImpl implements LogService {
         }else{
             return  "";
         }
-    }
-
-    private JSONArray list2json(List<Log> list){
-        JSONArray jsonArray = new JSONArray();
-        for(Log log:list){
-            JSONObject jsonObject = (JSONObject) JSONObject.toJSON(log);
-            jsonArray.add(jsonObject);
-        }
-        return jsonArray;
     }
 }
