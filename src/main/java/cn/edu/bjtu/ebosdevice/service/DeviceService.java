@@ -13,7 +13,7 @@ public interface DeviceService {
     Page<Device> findAllDevice(Pageable pageable);
     List<Device> findAllDevice();
     String addDevice(Device device);
-    String plusDevice(Device device);
+    Boolean plusDevice(Device device);
     String deleteDevice(String deviceId);
     Device findDeviceByDeviceId(String deviceId);
     Device findByName(String name);

@@ -171,29 +171,29 @@ public class DeviceController {
 
     @CrossOrigin
     @PostMapping("/recover/{ip}")
-    public JSONObject plusDevice(@PathVariable String ip, @RequestBody JSONArray jsonArray) {
-        logService.info(null,"开始向"+ip+"恢复设备配置");
+    public JSONObject plusDevice(@PathVariable String ip, @RequestBody List<PostedDevice> postedDeviceList) {
+        logService.info(null, "开始向" + ip + "恢复设备配置");
         String url = "http://" + ip + ":48081/api/v1/device";
         JSONObject result = new JSONObject();
-        for (int i = 0; i < jsonArray.size(); i++) {
-            JSONObject jsonObject = jsonArray.getJSONObject(i);
+        for (PostedDevice postedDevice : postedDeviceList) {
+            String res = "已更新";
             try {
                 try {
-                    restTemplate.put(url, jsonObject);
+                    restTemplate.put(url, postedDevice);
                 } catch (HttpClientErrorException.NotFound e) {
-                    restTemplate.postForObject(url, jsonObject, String.class);
+                    res = addDevice(ip, postedDevice);
                 }
                 Device device = new Device();
-                device.setDeviceName(jsonObject.getString("name"));
+                device.setDeviceName(postedDevice.getName());
                 device.setGateway(ip);
-                String r = deviceService.plusDevice(device);
-                result.put(jsonObject.getString("name"), r);
+                deviceService.plusDevice(device);
+                result.put(postedDevice.getName(), res);
             } catch (Exception e) {
-                result.put(jsonObject.getString("name"), e.toString());
+                result.put(postedDevice.getName(), e.toString());
                 e.printStackTrace();
             }
         }
-        logService.info(null,"恢复结果"+result.toJSONString());
+        logService.info(null, "恢复结果" + result.toJSONString());
         return result;
     }
 

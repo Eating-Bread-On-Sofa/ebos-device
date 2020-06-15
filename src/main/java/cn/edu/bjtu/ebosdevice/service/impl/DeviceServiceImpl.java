@@ -5,7 +5,6 @@ import cn.edu.bjtu.ebosdevice.entity.Device;
 import cn.edu.bjtu.ebosdevice.service.DeviceService;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -51,7 +50,7 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public String plusDevice(Device device){
+    public Boolean plusDevice(Device device){
         try {
             Device findDevice = deviceRepository.findByDeviceName(device.getDeviceName());
             if (findDevice != null) {
@@ -59,10 +58,10 @@ public class DeviceServiceImpl implements DeviceService {
             }
             device.setDeviceCreateTime(new Date());
             deviceRepository.save(device);
-            return "done";
+            return true;
         }catch (Exception e){
             e.printStackTrace();
-            return e.toString();}
+            return false;}
     }
 
     @Override
