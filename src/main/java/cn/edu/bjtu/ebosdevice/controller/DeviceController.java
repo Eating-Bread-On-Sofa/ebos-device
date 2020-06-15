@@ -84,6 +84,7 @@ public class DeviceController {
         return jsonArray;
     }
 
+    @ApiOperation(value = "按关键字搜索指定网关下的设备")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "ip",value = "指定网关的ip",required = true,paramType = "path",dataTypeClass = String.class),
             @ApiImplicitParam(name = "keywords",value = "关键字",required = true,paramType = "path",dataTypeClass = String.class)
@@ -111,6 +112,7 @@ public class DeviceController {
         return res;
     }
 
+    @ApiOperation(value = "查看指定网关的指定设备")
     @CrossOrigin
     @GetMapping("/ip/{ip}/id/{id}")
     public JSONObject getThisDevice(@PathVariable String ip, @PathVariable String id){
@@ -124,6 +126,7 @@ public class DeviceController {
         return jo;
     }
 
+    @ApiOperation(value = "向指定网关添加设备",notes = "需要网关ip")
     @CrossOrigin
     @PostMapping("/ip/{ip}")
     public String addDevice(@PathVariable String ip, @RequestBody PostedDevice postedDevice) {
@@ -169,6 +172,7 @@ public class DeviceController {
         return "添加成功";
     }
 
+    @ApiOperation(value = "设备恢复",notes = "需要指定网关ip")
     @CrossOrigin
     @PostMapping("/recover/{ip}")
     public JSONObject plusDevice(@PathVariable String ip, @RequestBody List<PostedDevice> postedDeviceList) {
@@ -197,6 +201,7 @@ public class DeviceController {
         return result;
     }
 
+    @ApiOperation(value = "删除指定网关下的设备",notes = "需要网关ip")
     @CrossOrigin
     @DeleteMapping("/ip/{ip}/name/{name}")
     public String deleteDevice(@PathVariable String ip, @PathVariable String name) {
@@ -213,6 +218,7 @@ public class DeviceController {
         }
     }
 
+    @ApiOperation(value = "协议字典")
     @CrossOrigin
     @GetMapping("/protocol/{name}")
     public JSONObject getProtocol(@PathVariable String name) {
@@ -232,6 +238,7 @@ public class DeviceController {
         return result;
     }
 
+    @ApiOperation(value = "协议字典目录")
     @CrossOrigin
     @GetMapping("/protocol")
     public Set<String> getProtocolKeys(){
@@ -247,6 +254,7 @@ public class DeviceController {
         return set;
     }
 
+    @ApiOperation(value = "设备服务列表",notes = "用于添加设备时选择服务")
     @CrossOrigin
     @GetMapping("/service/{ip}")
     public JSONArray getDeviceService(@PathVariable String ip){
@@ -261,14 +269,17 @@ public class DeviceController {
         return result;
     }
 
+    @ApiOperation(value = "测试指定设备",notes = "也可用于读取设备读数")
     @CrossOrigin
     @GetMapping("/details/{ip}/{id}")
     public JSONObject getDetails(@PathVariable String ip, @PathVariable String id){return deviceService.getDeviceDetail(ip, id);}
 
+    @ApiOperation(value = "监测在线设备")
     @CrossOrigin
     @GetMapping("/online/{ip}")
     public JSONArray getOnline(@PathVariable String ip){return deviceService.getOnlineDevices(ip);}
 
+    @ApiOperation(value = "微服务健康监测")
     @CrossOrigin
     @GetMapping("/ping")
     public String ping(){
