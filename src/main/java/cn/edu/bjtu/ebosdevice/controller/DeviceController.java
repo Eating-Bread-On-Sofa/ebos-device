@@ -1,5 +1,6 @@
 package cn.edu.bjtu.ebosdevice.controller;
 
+import cn.edu.bjtu.ebosdevice.model.PostedDevice;
 import cn.edu.bjtu.ebosdevice.service.LogService;
 import cn.edu.bjtu.ebosdevice.service.impl.ProtocolsDict;
 import com.alibaba.fastjson.JSONArray;
@@ -125,27 +126,47 @@ public class DeviceController {
 
     @CrossOrigin
     @PostMapping("/ip/{ip}")
-    public String addDevice(@PathVariable String ip, @RequestBody JSONObject jsonObject) {
+    public String addDevice(@PathVariable String ip, @RequestBody PostedDevice postedDevice) {
         String url = "http://" + ip + ":48081/api/v1/device";
-        String name = jsonObject.getString("name");
+        String name = postedDevice.getName();
         if(deviceService.findByName(name) == null) {
             try {
-                String result = restTemplate.postForObject(url, jsonObject, String.class);
-                Device device = new Device();
-                device.setDeviceName(name);
-                device.setGateway(ip);
-                device.setDescription(jsonObject.getString("description"));
-                deviceService.addDevice(device);
-                logService.info(null,"向"+ip+"添加"+name+"设备成功 Edgex id=" + result);
-                return "添加成功";
-            } catch (HttpClientErrorException e) {
-                logService.error(null,"尝试向"+ip+"添加"+name+"设备失败:"+e.toString());
-                return "添加失败 "+e.toString();
+                return getRes(ip, postedDevice, url, name);
+            }catch (HttpClientErrorException e){
+                System.out.println(e.getMessage());
+                if (Objects.equals(e.getMessage(), "400 Bad Request: [Invalid object ID: A device must be associated with a device profile\n" +
+                        "]")){
+                    try{
+                        String profileUrl = "http://localhost:8091/api/profile/gateway/"+ip+"/"+postedDevice.getProfile().getName();
+                        String profileRes = restTemplate.postForObject(profileUrl,null,String.class);
+                        if(profileRes.equals("模板库中无此模板")){return "添加失败 模板库及网关中均无此设备所使用的模板";}
+                        return getRes(ip, postedDevice, url, name);
+                    }catch (Exception e1){
+                        logService.error(null,"尝试向"+ip+"添加"+name+"设备失败:"+e1.toString());
+                        e1.printStackTrace();
+                        return "添加失败! "+e1.toString();
+                    }
+                }else {
+                    logService.error(null,"尝试向"+ip+"添加"+name+"设备失败:"+e.toString());
+                    System.out.println("添加失败 ");
+                    return "添加失败 "+e.toString();
+                }
             }
         }else{
             logService.warn(null,"尝试向"+ip+"添加"+name+"设备失败:名称重复");
             return "名称重复";
         }
+    }
+
+    private String getRes(@PathVariable String ip, @RequestBody PostedDevice postedDevice, String url, String name) {
+        String result = restTemplate.postForObject(url, postedDevice, String.class);
+        Device device = new Device();
+        device.setDeviceName(name);
+        device.setGateway(ip);
+        device.setDescription(postedDevice.getDescription());
+        deviceService.addDevice(device);
+        logService.info(null,"向"+ip+"添加"+name+"设备成功 Edgex id=" + result);
+        return "添加成功";
     }
 
     @CrossOrigin

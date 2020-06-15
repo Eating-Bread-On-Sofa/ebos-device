@@ -59,7 +59,7 @@ public class DeviceServiceImpl implements DeviceService {
             }
             device.setDeviceCreateTime(new Date());
             deviceRepository.save(device);
-            return "成功";
+            return "done";
         }catch (Exception e){
             e.printStackTrace();
             return e.toString();}
