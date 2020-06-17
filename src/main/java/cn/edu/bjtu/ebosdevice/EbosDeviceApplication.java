@@ -16,8 +16,8 @@ public class EbosDeviceApplication {
     @Bean
     public RestTemplate restTemplate() {
         SimpleClientHttpRequestFactory simpleClientHttpRequestFactory = new SimpleClientHttpRequestFactory();
-        simpleClientHttpRequestFactory.setConnectTimeout(3000);
-        simpleClientHttpRequestFactory.setReadTimeout(1000);
+        simpleClientHttpRequestFactory.setConnectTimeout(10000);
+        simpleClientHttpRequestFactory.setReadTimeout(10000);
         RestTemplate restTemplate = new RestTemplate(simpleClientHttpRequestFactory);
         return restTemplate;
     }
