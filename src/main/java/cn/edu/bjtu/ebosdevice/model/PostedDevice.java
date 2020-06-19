@@ -1,5 +1,6 @@
 package cn.edu.bjtu.ebosdevice.model;
 
+import com.alibaba.fastjson.JSONObject;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
@@ -11,7 +12,7 @@ public class PostedDevice {
     private String adminState;
     @ApiModelProperty(example = "ENABLED")
     private String operatingState;
-    private PostedProtocol protocols;
+    private JSONObject protocols;
     private List<String> labels;
     private PostedDeviceService service;
     private PostedDeviceProfile profile;
@@ -33,11 +34,11 @@ public class PostedDevice {
         this.description = description;
     }
 
-    public PostedProtocol getProtocols() {
+    public JSONObject getProtocols() {
         return protocols;
     }
 
-    public void setProtocols(PostedProtocol protocols) {
+    public void setProtocols(JSONObject protocols) {
         this.protocols = protocols;
     }
 
