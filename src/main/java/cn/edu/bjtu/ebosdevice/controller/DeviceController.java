@@ -180,7 +180,7 @@ public class DeviceController {
         String url = "http://" + ip + ":48081/api/v1/device";
         JSONObject result = new JSONObject();
         for (PostedDevice postedDevice : postedDeviceList) {
-            String res = "已更新";
+            String res = "已覆盖更新";
             try {
                 try {
                     restTemplate.put(url, postedDevice);
@@ -193,7 +193,8 @@ public class DeviceController {
                 deviceService.plusDevice(device);
                 result.put(postedDevice.getName(), res);
             } catch (Exception e) {
-                result.put(postedDevice.getName(), e.toString());
+                logService.error(null,e.toString());
+                result.put(postedDevice.getName(), "失败");
                 e.printStackTrace();
             }
         }
