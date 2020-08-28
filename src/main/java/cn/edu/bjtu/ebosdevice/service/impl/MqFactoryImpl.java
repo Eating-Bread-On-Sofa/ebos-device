@@ -9,7 +9,6 @@ import org.springframework.jms.core.JmsMessagingTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-
 @Service
 public class MqFactoryImpl implements MqFactory {
     @Autowired

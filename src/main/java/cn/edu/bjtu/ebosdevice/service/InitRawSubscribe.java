@@ -20,7 +20,6 @@ public class InitRawSubscribe implements ApplicationRunner {
 
     private ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 50,3, TimeUnit.SECONDS,new SynchronousQueue<>());
 
-
     @Override
     public void run(ApplicationArguments args) throws Exception {
         List<Subscribe> subscribes = subscribeService.findByServiceName();

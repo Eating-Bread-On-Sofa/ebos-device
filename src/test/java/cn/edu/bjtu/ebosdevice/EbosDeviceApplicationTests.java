@@ -9,5 +9,4 @@ class EbosDeviceApplicationTests {
     @Test
     void contextLoads() {
     }
-
 }

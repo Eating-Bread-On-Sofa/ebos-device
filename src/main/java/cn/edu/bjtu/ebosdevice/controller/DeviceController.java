@@ -40,7 +40,6 @@ public class DeviceController {
     public static final List<RawSubscribe> status = new LinkedList<>();
     private ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 50,3, TimeUnit.SECONDS,new SynchronousQueue<>());
 
-
     @ApiOperation(value = "查看指定网关设备",notes = "需要网关ip")
     @ApiImplicitParam(name = "ip",value = "指定网关的ip",required = true,paramType = "path",dataTypeClass = String.class)
     @CrossOrigin
@@ -350,7 +349,6 @@ public class DeviceController {
         mqProducer.publish(topic,message);
         return "发布成功";
     }
-
 
     @ApiOperation(value = "微服务健康监测")
     @CrossOrigin

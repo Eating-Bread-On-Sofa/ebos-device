@@ -1,8 +1,6 @@
 package cn.edu.bjtu.ebosdevice.dao;
 
 import cn.edu.bjtu.ebosdevice.entity.Device;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;

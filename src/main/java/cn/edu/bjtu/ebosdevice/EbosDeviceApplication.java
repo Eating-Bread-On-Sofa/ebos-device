@@ -21,5 +21,4 @@ public class EbosDeviceApplication {
         RestTemplate restTemplate = new RestTemplate(simpleClientHttpRequestFactory);
         return restTemplate;
     }
-
 }
