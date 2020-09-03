@@ -31,11 +31,11 @@ public class DeviceController {
     @Autowired
     LogService logService;
     @Autowired
-    ProtocolsDict protocolsDict;
-    @Autowired
     SubscribeService subscribeService;
     @Autowired
     MqFactory mqFactory;
+    @Autowired
+    ProtocolsDict protocolsDict;
 
     public static final List<RawSubscribe> status = new LinkedList<>();
     private ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 50,3, TimeUnit.SECONDS,new SynchronousQueue<>());
@@ -56,7 +56,7 @@ public class DeviceController {
             }catch (Exception ignored){}
             deviceService.simplifyAdd2JSONArray(arr, jo);
         }
-        logService.info(null,"查看了位于网关"+ip+" 下的设备列表");
+        logService.info("create","查看了位于网关"+ip+" 下的设备列表");
         return arr;
     }
 
@@ -117,7 +117,7 @@ public class DeviceController {
             }catch (Exception ignored){}
             deviceService.simplifyAdd2JSONArray(res, jo);
         }
-        logService.info(null,"查看了位于网关"+ip+" 下的名字类似为"+keywords+"的设备列表");
+        logService.info("retrieve","查看了位于网关"+ip+" 下的名字类似为"+keywords+"的设备列表");
         return res;
     }
 
@@ -131,7 +131,7 @@ public class DeviceController {
             Device device = deviceService.findByName(jo.getString("name"));
             jo = deviceService.addInfo2JsonObject(jo,device);
         }catch (Exception ignored){}
-        logService.info(null,"查看了位于网关"+ip+" 下id="+id+" 的设备信息");
+        logService.info("retrieve","查看了位于网关"+ip+" 下id="+id+" 的设备信息");
         return jo;
     }
 
@@ -154,18 +154,18 @@ public class DeviceController {
                         if(profileRes.equals("模板库中无此模板")){return "添加失败 模板库及网关中均无此设备所使用的模板";}
                         return getRes(ip, postedDevice, url, name);
                     }catch (Exception e1){
-                        logService.error(null,"尝试向"+ip+"添加"+name+"设备失败:"+e1.toString());
+                        logService.error("create","尝试向"+ip+"添加"+name+"设备失败:"+e1.toString());
                         e1.printStackTrace();
                         return "添加失败! "+e1.toString();
                     }
                 }else {
-                    logService.error(null,"尝试向"+ip+"添加"+name+"设备失败:"+e.toString());
+                    logService.error("create","尝试向"+ip+"添加"+name+"设备失败:"+e.toString());
                     System.out.println("添加失败 ");
                     return "添加失败 "+e.toString();
                 }
             }
         }else{
-            logService.warn(null,"尝试向"+ip+"添加"+name+"设备失败:名称重复");
+            logService.warn("create","尝试向"+ip+"添加"+name+"设备失败:名称重复");
             return "名称重复";
         }
     }
@@ -177,7 +177,7 @@ public class DeviceController {
         device.setGateway(ip);
         device.setDescription(postedDevice.getDescription());
         deviceService.addDevice(device);
-        logService.info(null,"向"+ip+"添加"+name+"设备成功 Edgex id=" + result);
+        logService.info("create","向"+ip+"添加"+name+"设备成功 Edgex id=" + result);
         return "添加成功";
     }
 
@@ -185,7 +185,7 @@ public class DeviceController {
     @CrossOrigin
     @PostMapping("/recover/{ip}")
     public JSONObject plusDevice(@PathVariable String ip, @RequestBody List<PostedDevice> postedDeviceList) {
-        logService.info(null, "开始向" + ip + "恢复设备配置");
+        logService.info("update", "开始向" + ip + "恢复设备配置");
         String url = "http://" + ip + ":48081/api/v1/device";
         JSONObject result = new JSONObject();
         for (PostedDevice postedDevice : postedDeviceList) {
@@ -202,12 +202,12 @@ public class DeviceController {
                 deviceService.plusDevice(device);
                 result.put(postedDevice.getName(), res);
             } catch (Exception e) {
-                logService.error(null,e.toString());
+                logService.error("update","尝试恢复设备失败："+e.toString());
                 result.put(postedDevice.getName(), "失败");
                 e.printStackTrace();
             }
         }
-        logService.info(null, "恢复结果" + result.toJSONString());
+        logService.info("update", "恢复结果" + result.toJSONString());
         return result;
     }
 
@@ -220,10 +220,10 @@ public class DeviceController {
             if (deviceService.deleteByName(name)) {
                 restTemplate.delete(url);
             }
-            logService.info(null,"删除网关"+ip+"中的"+name+"设备");
+            logService.info("delete","删除网关"+ip+"中的"+name+"设备");
             return "done";
         } catch (Exception e) {
-            logService.error(null,"删除网关"+ip+"中的"+name+"设备失败"+e.toString());
+            logService.error("delete","删除网关"+ip+"中的"+name+"设备失败"+e.toString());
             return e.toString();
         }
     }
@@ -232,19 +232,8 @@ public class DeviceController {
     @CrossOrigin
     @GetMapping("/protocol/{name}")
     public JSONObject getProtocol(@PathVariable String name) {
-        Map map = protocolsDict.getProtocol();
         JSONObject result = new JSONObject();
-        JSONObject content = new JSONObject();
-        Set keys = map.keySet();
-        Iterator it = keys.iterator();
-        while (it.hasNext()) {
-            String key = it.next().toString();
-            String protocalName = key.substring(0, key.length() - 2);
-            if (protocalName.equals(name)) {
-                content.put(map.get(key).toString(), null);
-            }
-        }
-        result.put(name, content);
+        result.put(name,protocolsDict.findOption(name));
         return result;
     }
 
@@ -252,16 +241,7 @@ public class DeviceController {
     @CrossOrigin
     @GetMapping("/protocol")
     public Set<String> getProtocolKeys(){
-        Map map = protocolsDict.getProtocol();
-        Set keys = map.keySet();
-        Iterator it = keys.iterator();
-        Set<String> set = new HashSet<>();
-        while (it.hasNext()) {
-            String key = it.next().toString();
-            String protocalName = key.substring(0, key.length() - 2);
-            set.add(protocalName);
-        }
-        return set;
+        return protocolsDict.getKeys();
     }
 
     @ApiOperation(value = "设备服务列表",notes = "用于添加设备时选择服务")
@@ -298,13 +278,15 @@ public class DeviceController {
                 status.add(rawSubscribe);
                 subscribeService.save(rawSubscribe.getSubTopic());
                 threadPoolExecutor.execute(rawSubscribe);
-                logService.info(null,"设备管理微服务订阅topic：" + rawSubscribe.getSubTopic());
+                logService.error("create","设备管理已订阅主题"+rawSubscribe.getSubTopic()+",再次订阅失败");
                 return "订阅成功";
             }catch (Exception e) {
                 e.printStackTrace();
+                logService.error("create","设备管理订阅主题"+rawSubscribe.getSubTopic()+"时，参数设定有误。");
                 return "参数错误!";
             }
         }else {
+            logService.error("create","设备管理已订阅主题"+rawSubscribe.getSubTopic()+",再次订阅失败");
             return "订阅主题重复";
         }
     }
@@ -328,7 +310,6 @@ public class DeviceController {
         synchronized (status){
             flag = status.remove(search(subTopic));
         }
-        logService.info(null,"删除设备管理上topic为"+subTopic+"的订阅");
         return flag;
     }
 
@@ -354,6 +335,7 @@ public class DeviceController {
     @CrossOrigin
     @GetMapping("/ping")
     public String ping(){
+        logService.info("retrieve","对设备管理进行了一次健康检测");
         return "pong";
     }
 
