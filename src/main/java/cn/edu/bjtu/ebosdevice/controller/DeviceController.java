@@ -1,7 +1,10 @@
 package cn.edu.bjtu.ebosdevice.controller;
 
+import cn.edu.bjtu.ebosdevice.entity.DeviceCount;
+import cn.edu.bjtu.ebosdevice.entity.Gateway;
 import cn.edu.bjtu.ebosdevice.model.PostedDevice;
 import cn.edu.bjtu.ebosdevice.service.*;
+import cn.edu.bjtu.ebosdevice.service.impl.DeviceCountServiceImpl;
 import cn.edu.bjtu.ebosdevice.service.impl.ProtocolsDict;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -15,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -36,6 +41,8 @@ public class DeviceController {
     MqFactory mqFactory;
     @Autowired
     ProtocolsDict protocolsDict;
+    @Autowired
+    DeviceCountService deviceCountService;
 
     public static final List<RawSubscribe> status = new LinkedList<>();
     private ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 50,3, TimeUnit.SECONDS,new SynchronousQueue<>());
@@ -144,7 +151,7 @@ public class DeviceController {
         if(deviceService.findByName(name) == null) {
             try {
                 return getRes(ip, postedDevice, url, name);
-            }catch (HttpClientErrorException e){
+            }catch (HttpClientErrorException | ParseException e){
                 System.out.println(e.getMessage());
                 if (Objects.equals(e.getMessage(), "400 Bad Request: [Invalid object ID: A device must be associated with a device profile\n" +
                         "]")){
@@ -170,7 +177,7 @@ public class DeviceController {
         }
     }
 
-    private String getRes(@PathVariable String ip, @RequestBody PostedDevice postedDevice, String url, String name) {
+    private String getRes(@PathVariable String ip, @RequestBody PostedDevice postedDevice, String url, String name) throws ParseException {
         String result = restTemplate.postForObject(url, postedDevice, String.class);
         Device device = new Device();
         device.setDeviceName(name);
@@ -178,7 +185,35 @@ public class DeviceController {
         device.setDescription(postedDevice.getDescription());
         deviceService.addDevice(device);
         logService.info("create","向"+ip+"添加"+name+"设备成功 Edgex id=" + result);
+        Date date = new Date();
+        SimpleDateFormat ds =  new SimpleDateFormat("yyyy-MM-dd");
+        Date now = ds.parse(ds.format(date));
+        addCount(now,ip);
         return "添加成功";
+    }
+
+    private void addCount (Date date , String ip) {
+        List<DeviceCount> counts = deviceCountService.findRecent();
+        for(DeviceCount count : counts){
+            if (count.getDate() == date){
+                List<Gateway> gateways = deviceCountService.findGateway();
+                for (Gateway gateway : gateways){
+                    if(gateway.getIp().equals(ip)){
+                        deviceCountService.addUpdate(date,gateway.getName());
+                    }
+                }
+            }else{
+                List<Gateway> gateways = deviceCountService.findGateway();
+                for (Gateway gateway : gateways){
+                    if(gateway.getIp().equals(ip)){
+                        deviceCountService.saveGateway(gateway.getName(),date,1);
+                        deviceCountService.saveTotal(date,1);
+                    }else{
+                        deviceCountService.saveGateway(gateway.getName(),date,0);
+                    }
+                }
+            }
+        }
     }
 
     @ApiOperation(value = "设备恢复",notes = "需要指定网关ip")
@@ -221,11 +256,56 @@ public class DeviceController {
                 restTemplate.delete(url);
             }
             logService.info("delete","删除网关"+ip+"中的"+name+"设备");
+            Date date = new Date();
+            SimpleDateFormat ds =  new SimpleDateFormat("yyyy-MM-dd");
+            Date now = ds.parse(ds.format(date));
+            delCount(now,ip);
             return "done";
         } catch (Exception e) {
             logService.error("delete","删除网关"+ip+"中的"+name+"设备失败"+e.toString());
             return e.toString();
         }
+    }
+
+    private void delCount (Date date, String ip) {
+        Boolean bool = deviceCountService.judgeTotal(date);
+        if (bool){
+            deviceCountService.delByDate(date);
+        }else {
+            List<Gateway> gateways = deviceCountService.findGateway();
+            for (Gateway gateway : gateways) {
+                if (gateway.getIp().equals(ip)) {
+                    deviceCountService.delUpdate(date,gateway.getName());
+                    break;
+                }
+            }
+        }
+    }
+
+    @ApiOperation(value = "返回每天各个网关增减设备的情况")
+    @CrossOrigin
+    @GetMapping("/ip/count")
+    public JSONObject count() {
+        JSONObject result = new JSONObject();
+        List<DeviceCount> counts = deviceCountService.findAll();
+        List<Gateway> gateways = deviceCountService.findGateway();
+        for (Gateway gateway : gateways) {
+            JSONObject tem = new JSONObject();
+            for (DeviceCount count : counts){
+                if (count.getGateway().equals(gateway.getName())){
+                    tem.put(count.getGateway(),count.getCount());
+                }
+            }
+            result.put(gateway.getName(),tem);
+        }
+        for (DeviceCount count : counts){
+            JSONObject temp = new JSONObject();
+            if (count.getGateway().equals("总计")){
+                temp.put(count.getGateway(),count.getCount());
+            }
+            result.put("总计",temp);
+        }
+        return result;
     }
 
     @ApiOperation(value = "协议字典")
