@@ -194,22 +194,34 @@ public class DeviceController {
 
     private void addCount (Date date , String ip) {
         List<DeviceCount> counts = deviceCountService.findRecent();
-        for(DeviceCount count : counts){
-            if (count.getDate() == date){
-                List<Gateway> gateways = deviceCountService.findGateway();
-                for (Gateway gateway : gateways){
-                    if(gateway.getIp().equals(ip)){
-                        deviceCountService.addUpdate(date,gateway.getName());
-                    }
+        if ( counts == null ){
+            List<Gateway> gateways = deviceCountService.findGateway();
+            for (Gateway gateway : gateways){
+                if(gateway.getIp().equals(ip)){
+                    deviceCountService.saveGateway(gateway.getName(),date,1);
+                    deviceCountService.saveTotal(date,1);
+                }else{
+                    deviceCountService.saveGateway(gateway.getName(),date,0);
                 }
-            }else{
-                List<Gateway> gateways = deviceCountService.findGateway();
-                for (Gateway gateway : gateways){
-                    if(gateway.getIp().equals(ip)){
-                        deviceCountService.saveGateway(gateway.getName(),date,1);
-                        deviceCountService.saveTotal(date,1);
-                    }else{
-                        deviceCountService.saveGateway(gateway.getName(),date,0);
+            }
+        } else {
+            for(DeviceCount count : counts){
+                if (count.getDate() == date){
+                    List<Gateway> gateways = deviceCountService.findGateway();
+                    for (Gateway gateway : gateways){
+                        if(gateway.getIp().equals(ip)){
+                            deviceCountService.addUpdate(date,gateway.getName());
+                        }
+                    }
+                }else{
+                    List<Gateway> gateways = deviceCountService.findGateway();
+                    for (Gateway gateway : gateways){
+                        if(gateway.getIp().equals(ip)){
+                            deviceCountService.saveGateway(gateway.getName(),date,1);
+                            deviceCountService.saveTotal(date,1);
+                        }else{
+                            deviceCountService.saveGateway(gateway.getName(),date,0);
+                        }
                     }
                 }
             }
