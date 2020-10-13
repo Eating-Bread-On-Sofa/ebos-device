@@ -300,26 +300,31 @@ public class DeviceController {
     @GetMapping("/ip/count")
     public JSONObject count() {
         JSONObject result = new JSONObject();
-        List<DeviceCount> counts = deviceCountService.findAll();
-        List<Gateway> gateways = deviceCountService.findGateway();
-        SimpleDateFormat dss =  new SimpleDateFormat("yyyy-MM-dd");
-        for (Gateway gateway : gateways) {
-            JSONObject tem = new JSONObject();
-            for (DeviceCount count : counts){
-                if (count.getGateway().equals(gateway.getName())){
-                    tem.put(dss.format(count.getDate()),count.getCount());
+        List<DeviceCount> test = deviceCountService.findRecent();
+        if (test.size() == 0){
+            return result;
+        }else {
+            List<DeviceCount> counts = deviceCountService.findAll();
+            List<Gateway> gateways = deviceCountService.findGateway();
+            SimpleDateFormat dss =  new SimpleDateFormat("yyyy-MM-dd");
+            for (Gateway gateway : gateways) {
+                JSONObject tem = new JSONObject();
+                for (DeviceCount count : counts){
+                    if (count.getGateway().equals(gateway.getName())){
+                        tem.put(dss.format(count.getDate()),count.getCount());
+                    }
                 }
+                result.put(gateway.getName(),tem);
             }
-            result.put(gateway.getName(),tem);
-        }
-        for (DeviceCount count : counts){
-            JSONObject temp = new JSONObject();
-            if (count.getGateway().equals("total")){
-                temp.put(dss.format(count.getDate()),count.getCount());
+            for (DeviceCount count : counts){
+                JSONObject temp = new JSONObject();
+                if (count.getGateway().equals("total")){
+                    temp.put(dss.format(count.getDate()),count.getCount());
+                }
+                result.put("total",temp);
             }
-            result.put("total",temp);
+            return result;
         }
-        return result;
     }
 
     @ApiOperation(value = "协议字典")
