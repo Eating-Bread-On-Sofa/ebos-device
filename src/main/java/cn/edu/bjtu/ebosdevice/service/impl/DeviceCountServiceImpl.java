@@ -47,7 +47,7 @@ public class DeviceCountServiceImpl implements DeviceCountService {
 
     @Override
     public List<Gateway> findGateway() {
-        return mongoTemplate.findAll(Gateway.class,"Gateway");
+        return mongoTemplate.findAll(Gateway.class,"gateway");
     }
 
     @Override
