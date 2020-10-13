@@ -192,8 +192,9 @@ public class DeviceController {
         return "添加成功";
     }
 
-    private void addCount (Date date , String ip) {
+    private void addCount (Date date , String ip) throws ParseException {
         List<DeviceCount> counts = deviceCountService.findRecent();
+        SimpleDateFormat ds =  new SimpleDateFormat("yyyy-MM-dd");
         if ( counts.size() == 0 ){
             List<Gateway> gateways = deviceCountService.findGateway();
             for (Gateway gateway : gateways){
@@ -206,7 +207,7 @@ public class DeviceController {
             }
         } else {
             for(DeviceCount count : counts){
-                if (count.getDate() == date){
+                if (ds.parse(ds.format(count.getDate())) == date){
                     List<Gateway> gateways = deviceCountService.findGateway();
                     for (Gateway gateway : gateways){
                         if(gateway.getIp().equals(ip)){
