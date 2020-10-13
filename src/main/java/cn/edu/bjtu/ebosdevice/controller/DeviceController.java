@@ -207,7 +207,7 @@ public class DeviceController {
             }
         } else {
             for(DeviceCount count : counts){
-                if (ds.parse(ds.format(count.getDate())) == date){
+                if (ds.format(count.getDate()).equals(ds.format(date))){
                     List<Gateway> gateways = deviceCountService.findGateway();
                     for (Gateway gateway : gateways){
                         if(gateway.getIp().equals(ip)){
