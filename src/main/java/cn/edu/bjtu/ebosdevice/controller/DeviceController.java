@@ -194,7 +194,7 @@ public class DeviceController {
 
     private void addCount (Date date , String ip) {
         List<DeviceCount> counts = deviceCountService.findRecent();
-        if ( counts == null ){
+        if ( counts.size() == 0 ){
             List<Gateway> gateways = deviceCountService.findGateway();
             for (Gateway gateway : gateways){
                 if(gateway.getIp().equals(ip)){
@@ -305,7 +305,7 @@ public class DeviceController {
             JSONObject tem = new JSONObject();
             for (DeviceCount count : counts){
                 if (count.getGateway().equals(gateway.getName())){
-                    tem.put(count.getGateway(),count.getCount());
+                    tem.put(count.getDate().toString(),count.getCount());
                 }
             }
             result.put(gateway.getName(),tem);
