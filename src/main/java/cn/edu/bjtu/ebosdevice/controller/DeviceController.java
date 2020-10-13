@@ -301,21 +301,22 @@ public class DeviceController {
         JSONObject result = new JSONObject();
         List<DeviceCount> counts = deviceCountService.findAll();
         List<Gateway> gateways = deviceCountService.findGateway();
+        SimpleDateFormat dss =  new SimpleDateFormat("yyyy-MM-dd");
         for (Gateway gateway : gateways) {
             JSONObject tem = new JSONObject();
             for (DeviceCount count : counts){
                 if (count.getGateway().equals(gateway.getName())){
-                    tem.put(count.getDate().toString(),count.getCount());
+                    tem.put(dss.format(count.getDate()),count.getCount());
                 }
             }
             result.put(gateway.getName(),tem);
         }
         for (DeviceCount count : counts){
             JSONObject temp = new JSONObject();
-            if (count.getGateway().equals("总计")){
-                temp.put(count.getGateway(),count.getCount());
+            if (count.getGateway().equals("total")){
+                temp.put(dss.format(count.getDate()),count.getCount());
             }
-            result.put("总计",temp);
+            result.put("total",temp);
         }
         return result;
     }

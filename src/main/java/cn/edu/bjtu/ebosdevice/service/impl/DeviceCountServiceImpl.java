@@ -34,7 +34,7 @@ public class DeviceCountServiceImpl implements DeviceCountService {
     @Override
     public void saveTotal(Date date, int count) {
         DeviceCount deviceCount = new DeviceCount();
-        deviceCount.setGateway("总计");
+        deviceCount.setGateway("total");
         deviceCount.setDate(date);
         deviceCount.setCount(count);
         mongoTemplate.save(deviceCount);
@@ -66,7 +66,7 @@ public class DeviceCountServiceImpl implements DeviceCountService {
             update.set("count",data.getCount() + 1);
             mongoTemplate.upsert(query,update,DeviceCount.class);
         }
-        Query query1 = Query.query(Criteria.where("gateway").is("总计").and("date").is(date));
+        Query query1 = Query.query(Criteria.where("gateway").is("total").and("date").is(date));
         List<DeviceCount> totals = mongoTemplate.find(query1,DeviceCount.class,"deviceCount");
         for (DeviceCount total : totals){
             Update update1 = new Update();
@@ -78,7 +78,7 @@ public class DeviceCountServiceImpl implements DeviceCountService {
     @Override
     public Boolean judgeTotal(Date date) {
         Boolean bool = false;
-        Query query = Query.query(Criteria.where("gateway").is("总计").and("date").is(date));
+        Query query = Query.query(Criteria.where("gateway").is("total").and("date").is(date));
         List<DeviceCount> datas = mongoTemplate.find(query,DeviceCount.class,"deviceCount");
         for(DeviceCount data : datas){
            if (data.getCount() == 1){
@@ -98,7 +98,7 @@ public class DeviceCountServiceImpl implements DeviceCountService {
             update.set("count",data.getCount() - 1);
             mongoTemplate.upsert(query,update,DeviceCount.class);
         }
-        Query query1 = Query.query(Criteria.where("gateway").is("总计").and("date").is(date));
+        Query query1 = Query.query(Criteria.where("gateway").is("total").and("date").is(date));
         List<DeviceCount> totals = mongoTemplate.find(query1,DeviceCount.class,"deviceCount");
         for (DeviceCount total : totals){
             Update update1 = new Update();
