@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    status="OFF" 日志框架本身的输出日志级别
+    日志级别：ALL < TRACE < DEBUG < INFO < WARN < ERROR < FATAL < OFF
+    monitorInterval="60" 自动加载配置文件的间隔时间，不低于 60 秒
+-->
+<Configuration status="INFO" monitorInterval="5">
+    <!--集中配置属性进行管理 使用时通过：${name}-->
+    <properties>
+        <property name="LOG_PATTERN">%d{HH:mm:ss.SSS} [%t] [%-5level] %c{36}:%L --- %m%n</property>
+        <property name="LOG_HOME">/opt/ebos-logs/ebos-device</property>
+        <property name="FILE_NAME">ebos-device</property>
+    </properties>
+    <!--日志处理-->
+    <Appenders>
+        <!--控制台输出 appender-->
+        <!--SYSTEM_ERR表示输出字体为红色，SYSTEM_OUT表示输出字体为黑色-->
+        <Console name="Console" target="SYSTEM_OUT">
+            <!--
+                日志输出格式：
+                %d{patter} 日期
+                %m 信息
+                %M 方法
+                %L 行号
+                %c 类的完整名称
+                %t 线程名称
+                %-5level 表示日志级别占5个字符，不足向左对齐
+                %n 换行
+            -->
+            <!--ThresholdFilter指定日志消息的输出最低层次-->
+            <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </Console>
+
+        <RollingRandomAccessFile name="Information" fileName="${LOG_HOME}/${FILE_NAME}.log" filePattern="${LOG_HOME}/${FILE_NAME}_%d{yyyy-MM-dd}.log">
+            <Filters>
+                <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval = "1" modulate = "true"/>
+                <SizeBasedTriggeringPolicy size="10MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="31"/>
+        </RollingRandomAccessFile>
+
+
+    </Appenders>
+    <!--logger 定义-->
+    <Loggers>
+        <Root level="info">
+            <Appender-Ref ref="Console"/>
+            <Appender-Ref ref="Information"/>
+        </Root>
+    </Loggers>
+
+</Configuration>
