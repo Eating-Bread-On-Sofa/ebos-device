@@ -4,7 +4,6 @@ import cn.edu.bjtu.ebosdevice.entity.DeviceCount;
 import cn.edu.bjtu.ebosdevice.entity.Gateway;
 import cn.edu.bjtu.ebosdevice.model.PostedDevice;
 import cn.edu.bjtu.ebosdevice.service.*;
-import cn.edu.bjtu.ebosdevice.service.impl.DeviceCountServiceImpl;
 import cn.edu.bjtu.ebosdevice.service.impl.ProtocolsDict;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -316,13 +315,13 @@ public class DeviceController {
                 }
                 result.put(gateway.getName(),tem);
             }
+            JSONObject temp = new JSONObject();
             for (DeviceCount count : counts){
-                JSONObject temp = new JSONObject();
                 if (count.getGateway().equals("total")){
                     temp.put(dss.format(count.getDate()),count.getCount());
                 }
-                result.put("total",temp);
             }
+            result.put("total",temp);
             return result;
         }
     }
