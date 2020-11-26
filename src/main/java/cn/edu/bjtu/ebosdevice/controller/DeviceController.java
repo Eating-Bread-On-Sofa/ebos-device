@@ -306,6 +306,13 @@ public class DeviceController {
             List<DeviceCount> counts = deviceCountService.findAll();
             List<Gateway> gateways = deviceCountService.findGateway();
             SimpleDateFormat dss =  new SimpleDateFormat("yyyy-MM-dd");
+            JSONObject temp = new JSONObject();
+            for (DeviceCount count : counts){
+                if (count.getGateway().equals("total")){
+                    temp.put(dss.format(count.getDate()),count.getCount());
+                }
+            }
+            result.put("total",temp);
             for (Gateway gateway : gateways) {
                 JSONObject tem = new JSONObject();
                 for (DeviceCount count : counts){
@@ -315,13 +322,6 @@ public class DeviceController {
                 }
                 result.put(gateway.getName(),tem);
             }
-            JSONObject temp = new JSONObject();
-            for (DeviceCount count : counts){
-                if (count.getGateway().equals("total")){
-                    temp.put(dss.format(count.getDate()),count.getCount());
-                }
-            }
-            result.put("total",temp);
             return result;
         }
     }
