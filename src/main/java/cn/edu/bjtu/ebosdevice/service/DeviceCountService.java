@@ -9,7 +9,6 @@ import java.util.List;
 
 @Service
 public interface DeviceCountService {
-
     void saveGateway(String gateway, Date date, int count);
     void saveTotal( Date date, int count);
     List<DeviceCount> findAll();

@@ -297,7 +297,7 @@ public class DeviceController {
     @ApiOperation(value = "返回每天各个网关增减设备的情况")
     @CrossOrigin
     @GetMapping("/ip/count")
-    public JSONObject count() {
+    public JSONObject count(){
         JSONObject result = new JSONObject();
         List<DeviceCount> test = deviceCountService.findRecent();
         if (test.size() == 0){
@@ -306,15 +306,15 @@ public class DeviceController {
             List<DeviceCount> counts = deviceCountService.findAll();
             List<Gateway> gateways = deviceCountService.findGateway();
             SimpleDateFormat dss =  new SimpleDateFormat("yyyy-MM-dd");
-            JSONObject temp = new JSONObject();
-            for (DeviceCount count : counts){
-                if (count.getGateway().equals("total")){
-                    temp.put(dss.format(count.getDate()),count.getCount());
+            LinkedHashMap<String, Integer> temp = new LinkedHashMap<>();
+            for (int i=0;i<counts.size();i++){
+                if (counts.get(i).getGateway().equals("total")){
+                    temp.put(dss.format(counts.get(i).getDate()),counts.get(i).getCount());
                 }
             }
             result.put("total",temp);
             for (Gateway gateway : gateways) {
-                JSONObject tem = new JSONObject();
+                LinkedHashMap<String, Integer> tem = new LinkedHashMap<>();
                 for (DeviceCount count : counts){
                     if (count.getGateway().equals(gateway.getName())){
                         tem.put(dss.format(count.getDate()),count.getCount());
