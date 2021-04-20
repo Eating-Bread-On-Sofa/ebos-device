@@ -161,17 +161,17 @@ public class DeviceServiceImpl implements DeviceService {
             JSONObject deviceObj = all.getJSONObject(i);
             String deviceId = deviceObj.getString("id");
             String deviceName = deviceObj.getString("name");
-            JSONArray commandsArr = deviceObj.getJSONArray("commands");
-            String commandsId= commandsArr.getJSONObject(0).getString("id");
-            try {
-                String url = "http://"+ip+":48082/api/v1/device/"+deviceId+"/command/"+commandsId;
-                JSONObject get = new JSONObject(restTemplate.getForObject(url, JSONObject.class));
+//            JSONArray commandsArr = deviceObj.getJSONArray("commands");
+//            String commandsId= commandsArr.getJSONObject(0).getString("id");
+//            try {
+//                String url = "http://"+ip+":48082/api/v1/device/"+deviceId+"/command/"+commandsId;
+//                JSONObject get = new JSONObject(restTemplate.getForObject(url, JSONObject.class));
                 JSONObject id = new JSONObject();
                 id.put("id",deviceId);
                 id.put("name",deviceName);
                 idArr.add(id);
-            } catch (Exception e) {
-            }
+//            } catch (Exception e) {
+//            }
         }
         return idArr;
     }
